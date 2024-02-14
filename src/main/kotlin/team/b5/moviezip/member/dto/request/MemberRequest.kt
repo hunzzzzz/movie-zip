@@ -8,7 +8,7 @@ import team.b5.moviezip.member.model.Member
 import team.b5.moviezip.member.model.MemberRole
 import team.b5.moviezip.member.model.MemberStatus
 
-data class SignupRequest(
+data class MemberRequest(
     @field:NotBlank(message = "사용자 이름은 필수 항목입니다.")
     val name: String,
 

@@ -2,7 +2,7 @@ package team.b5.moviezip.member.model
 
 import jakarta.persistence.*
 import team.b5.moviezip.global.model.BaseEntity
-import team.b5.moviezip.member.dto.request.SignupRequest
+import team.b5.moviezip.member.dto.request.MemberRequest
 
 @Entity
 @Table(name = "Members")
@@ -32,10 +32,10 @@ class Member(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    fun update(signupRequest: SignupRequest) {
-        this.name = signupRequest.name
-        this.email = signupRequest.email
-        this.nickname = signupRequest.nickname
-        this.password = signupRequest.password
+    fun update(memberRequest: MemberRequest) {
+        this.name = memberRequest.name
+        this.email = memberRequest.email
+        this.nickname = memberRequest.nickname
+        this.password = memberRequest.password
     }
 }
