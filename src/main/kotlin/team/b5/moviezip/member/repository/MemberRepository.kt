@@ -5,4 +5,7 @@ import org.springframework.stereotype.Repository
 import team.b5.moviezip.member.model.Member
 
 @Repository
-interface MemberRepository : JpaRepository<Member, Long>
+interface MemberRepository : JpaRepository<Member, Long> {
+    fun existsByNickname(nickname: String): Boolean
+    fun existsByEmail(email: String): Boolean
+}
