@@ -1,11 +1,14 @@
 package team.b5.moviezip.member.service
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.member.dto.request.SignupRequest
 import team.b5.moviezip.member.repository.MemberRepository
 
 @Service
+@Transactional
 class MemberService(
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder
@@ -17,10 +20,21 @@ class MemberService(
             memberRepository.save(it.to(passwordEncoder))
         }
 
+    // 프로필 수정
+    fun update(signupRequest: SignupRequest, memberId: Long) =
+        signupRequest.let {
+            validateSignupRequest(it)
+            getMember(memberId).update(it)
+        }
+
     // 회원가입 검증
     private fun validateSignupRequest(signupRequest: SignupRequest) {
         if (memberRepository.existsByNickname(signupRequest.nickname)) throw Exception("") // TODO
         else if (memberRepository.existsByEmail(signupRequest.email)) throw Exception("") // TODO
         else if (signupRequest.password != signupRequest.password2) throw Exception("") // TODO
     }
+
+    // 회원 조회
+    private fun getMember(memberId: Long) =
+        memberRepository.findByIdOrNull(memberId) ?: throw Exception("") // TODO
 }
