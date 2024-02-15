@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.member.dto.request.MemberRequest
+import team.b5.moviezip.member.dto.response.MemberResponse
 import team.b5.moviezip.member.repository.MemberRepository
 
 @Service
@@ -26,6 +27,10 @@ class MemberService(
             validateRequest(it, memberId)
             getMember(memberId).update(it)
         }
+
+    // 프로필 조회
+    fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
+
 
     // 회원가입 검증
     private fun validateRequest(memberRequest: MemberRequest) {
