@@ -5,6 +5,9 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.b5.moviezip.global.exception.case.DuplicatedValueException
+import team.b5.moviezip.global.exception.case.ModelNotFoundException
+import team.b5.moviezip.global.exception.case.PasswordMismatchException
 import team.b5.moviezip.global.util.EmailEncoder
 import team.b5.moviezip.member.dto.request.FindEmailRequest
 import team.b5.moviezip.global.security.jwt.JwtPlugin
@@ -46,13 +49,6 @@ class MemberService(
             getMember(memberId).update(it)
         }
 
-    // 회원가입 검증
-    private fun validateRequest(memberRequest: MemberRequest) {
-        if (memberRepository.existsByNickname(memberRequest.nickname)) throw Exception("") // TODO
-        else if (memberRepository.existsByEmail(memberRequest.email)) throw Exception("") // TODO
-        else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
-    }
-
     // 회원 탈퇴 (신청)
     fun withdrawal(memberId: Long) = getMember(memberId).updateForWithdrawal()
 
@@ -67,13 +63,13 @@ class MemberService(
     //로그인
     fun login(memberLoginRequest: MemberLoginRequest): MemberLoginResponse {
         val member =
-            memberRepository.findByEmail(memberLoginRequest.email) ?: throw Exception("") // TODO
+            memberRepository.findByEmail(memberLoginRequest.email) ?: throw ModelNotFoundException("회원")
         if (!passwordEncoder.matches(
                 memberLoginRequest.password,
                 member.password
             )
         ) {
-            throw Exception("") // TODO
+            throw PasswordMismatchException()
         }
         return MemberLoginResponse(
             accessToken = jwtPlugin.generateAccessToken(
@@ -84,30 +80,37 @@ class MemberService(
         )
     }
 
+    // 회원가입 검증
+    private fun validateRequest(memberRequest: MemberRequest) {
+        if (memberRepository.existsByNickname(memberRequest.nickname)) throw DuplicatedValueException("닉네임")
+        else if (memberRepository.existsByEmail(memberRequest.email)) throw DuplicatedValueException("이메일")
+        else if (memberRequest.password != memberRequest.password2) throw PasswordMismatchException()
+    }
+
     // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
     private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
         if (memberRepository.existsByNickname(memberRequest.nickname)
             && getMemberByNickname(memberRequest.nickname).id != memberId
-        ) throw Exception("") // TODO
+        ) throw DuplicatedValueException("닉네임")
         else if (memberRepository.existsByEmail(memberRequest.email)
             && getMemberByEmail(memberRequest.email).id != memberId
-        ) throw Exception("") // TODO
-        else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
+        ) throw DuplicatedValueException("이메일")
+        else if (memberRequest.password != memberRequest.password2) throw PasswordMismatchException()
     }
 
     // 회원 조회 (memberId)
     private fun getMember(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw Exception("") // TODO
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("회원")
 
     // 회원 조회 (name, phone)
     private fun getMemberByNameAndPhone(name: String, phone: String) =
-        memberRepository.findByNameAndPhone(name, phone) ?: throw Exception("") // TODO
+        memberRepository.findByNameAndPhone(name, phone) ?: throw ModelNotFoundException("회원")
 
     // 회원 조회 (nickname)
     private fun getMemberByNickname(nickname: String) =
-        memberRepository.findByNickname(nickname) ?: throw Exception("") // TODO
+        memberRepository.findByNickname(nickname) ?: throw ModelNotFoundException("회원")
 
     // 회원 조회 (email)
     private fun getMemberByEmail(email: String) =
-        memberRepository.findByEmail(email) ?: throw Exception("") // TODO
+        memberRepository.findByEmail(email) ?: throw ModelNotFoundException("회원")
 }
