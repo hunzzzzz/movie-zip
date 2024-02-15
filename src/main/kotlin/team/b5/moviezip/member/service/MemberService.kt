@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.global.util.EmailEncoder
 import team.b5.moviezip.member.dto.request.FindEmailRequest
+import team.b5.moviezip.global.security.jwt.JwtPlugin
+import team.b5.moviezip.member.dto.request.MemberLoginRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
+import team.b5.moviezip.member.dto.response.MemberLoginResponse
 import team.b5.moviezip.member.model.MemberStatus
 import team.b5.moviezip.member.dto.response.MemberResponse
 import team.b5.moviezip.member.repository.MemberRepository
@@ -17,7 +20,8 @@ import java.time.ZonedDateTime
 @Transactional
 class MemberService(
     private val memberRepository: MemberRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtPlugin: JwtPlugin
 ) {
     // 회원가입
     fun signup(memberRequest: MemberRequest) =
@@ -59,12 +63,32 @@ class MemberService(
             .filter {
                 it.status == MemberStatus.WITHDRAWN && it.updatedAt.plusDays(90) < ZonedDateTime.now()
             }.map { memberRepository.delete(it) }
+            
+    //로그인
+    fun login(memberLoginRequest: MemberLoginRequest): MemberLoginResponse {
+        val member =
+            memberRepository.findByEmail(memberLoginRequest.email) ?: throw Exception("") // TODO
+        if (!passwordEncoder.matches(
+                memberLoginRequest.password,
+                member.password
+            )
+        ) {
+            throw Exception("") // TODO
+        }
+        return MemberLoginResponse(
+            accessToken = jwtPlugin.generateAccessToken(
+                subject = member.id.toString(),
+                email = member.email,
+                role = member.role.name
+            )
+        )
+    }
 
     // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
     private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
         if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
             throw Exception("") // TODO
-        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email).id != memberId)
+        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email)?.id != memberId)
             throw Exception("") // TODO
         else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
     }

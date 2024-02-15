@@ -25,6 +25,9 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 	// SECURITY
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("io.jsonwebtoken:jjwt-api:0.12.3")//추가
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")//추가
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")//추가
 	// SWAGGER
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 	// TEST

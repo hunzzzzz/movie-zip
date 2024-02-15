@@ -24,7 +24,8 @@ class SecurityConfig {
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/signup",
-                    "/members/find-email",
+                    "/login",
+                    "/members/find-email"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
@@ -33,4 +34,5 @@ class SecurityConfig {
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
+
 }

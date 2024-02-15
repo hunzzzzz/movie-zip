@@ -8,7 +8,7 @@ import team.b5.moviezip.member.model.Member
 interface MemberRepository : JpaRepository<Member, Long> {
     fun existsByNickname(nickname: String): Boolean
     fun existsByEmail(email: String): Boolean
-    fun findByNickname(nickname: String): Member
-    fun findByEmail(email: String): Member
+    fun findByNickname(nickname: String): Member?
+    fun findByEmail(email: String): Member?
     fun findByNameAndPhone(name: String, phone: String): Member?
 }
