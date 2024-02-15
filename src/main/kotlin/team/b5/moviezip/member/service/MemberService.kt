@@ -26,6 +26,12 @@ class MemberService(
             memberRepository.save(it.to(passwordEncoder))
         }
 
+    // 이메일 찾기
+    fun findEmail(findEmailRequest: FindEmailRequest) =
+        EmailEncoder.encode(
+            email = getMember(findEmailRequest.name, findEmailRequest.phone).email
+        )
+
     // 프로필 조회
     fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
 
@@ -35,12 +41,6 @@ class MemberService(
             validateRequest(it, memberId)
             getMember(memberId).update(it)
         }
-
-    // 이메일 찾기
-    fun findEmail(findEmailRequest: FindEmailRequest) =
-        EmailEncoder.encode(
-            email = getMember(findEmailRequest.name, findEmailRequest.phone).email
-        )
 
     // 회원가입 검증
     private fun validateRequest(memberRequest: MemberRequest) {
