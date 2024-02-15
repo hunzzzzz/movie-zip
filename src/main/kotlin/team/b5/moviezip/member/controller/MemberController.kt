@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import team.b5.moviezip.member.dto.request.FindEmailRequest
 import team.b5.moviezip.member.dto.request.MemberLoginRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
 import team.b5.moviezip.member.dto.response.MemberLoginResponse
@@ -34,13 +35,18 @@ class MemberController(
     fun update(@RequestBody memberRequest: MemberRequest, @PathVariable memberId: Long) =
         ResponseEntity.ok().body(memberService.update(memberRequest, memberId))
 
-//    로그인
+    // 로그인
     @PostMapping("/login")
     fun login(@RequestBody memberLoginRequest: MemberLoginRequest): ResponseEntity<MemberLoginResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(memberService.login(memberLoginRequest))
     }
+    // 이메일 찾기
+    @PostMapping("/members/find-email")
+    fun findEmail(@RequestBody findEmailRequest: FindEmailRequest) =
+        ResponseEntity.ok().body(memberService.findEmail(findEmailRequest))
+
     // 회원 탈퇴
     @DeleteMapping("/members/withdrawal/{memberId}")
     fun withdrawal(@PathVariable memberId: Long) =
