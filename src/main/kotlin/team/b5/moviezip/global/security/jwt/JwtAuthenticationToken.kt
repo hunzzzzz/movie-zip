@@ -2,11 +2,11 @@ package team.b5.moviezip.global.security.jwt
 
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.web.authentication.WebAuthenticationDetails
-import team.b5.moviezip.global.security.UserPrincipal
+import team.b5.moviezip.global.security.MemberPrincipal
 import java.io.Serializable
 
 class JwtAuthenticationToken(
-    private val principal: UserPrincipal,
+    private val principal: MemberPrincipal,
     details: WebAuthenticationDetails,
 ) : AbstractAuthenticationToken(principal.authorities), Serializable {
 

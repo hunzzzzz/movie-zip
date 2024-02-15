@@ -32,7 +32,10 @@ class MemberService(
             validateRequest(it)
             memberRepository.save(it.to(passwordEncoder))
         }
-
+        
+    // 프로필 조회
+    fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
+    
     // 이메일 찾기
     fun findEmail(findEmailRequest: FindEmailRequest) =
         EmailEncoder.encode(
@@ -60,7 +63,24 @@ class MemberService(
                 it.status == MemberStatus.WITHDRAWN && it.updatedAt.plusDays(90) < ZonedDateTime.now()
             }.map { memberRepository.delete(it) }
 
-    //로그인
+    // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
+    private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
+        if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
+            throw Exception("") // TODO
+        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email)?.id != memberId)
+            throw Exception("") // TODO
+        else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
+    }
+
+    // 회원 탈퇴 여부를 10초에 한 번씩 확인
+    @Scheduled(fixedDelay = 1000 * 10)
+    fun checkWithdrawal() =
+        memberRepository.findAll()
+            .filter {
+                it.status == MemberStatus.WITHDRAWN && it.updatedAt.plusDays(90) < ZonedDateTime.now()
+            }.map { memberRepository.delete(it) }
+
+    // 로그인
     fun login(memberLoginRequest: MemberLoginRequest): MemberLoginResponse {
         val member =
             memberRepository.findByEmail(memberLoginRequest.email) ?: throw ModelNotFoundException("회원")
