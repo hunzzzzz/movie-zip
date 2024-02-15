@@ -23,7 +23,8 @@ class SecurityConfig {
                     "/h2-console/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/signup"
+                    "/signup",
+                    "/login"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
@@ -32,4 +33,5 @@ class SecurityConfig {
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
+
 }

@@ -1,5 +1,6 @@
 package team.b5.moviezip.member.controller
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -8,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import team.b5.moviezip.member.dto.request.MemberLoginRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
+import team.b5.moviezip.member.dto.response.MemberLoginResponse
 import team.b5.moviezip.member.service.MemberService
 import java.net.URI
 
@@ -31,6 +34,13 @@ class MemberController(
     fun update(@RequestBody memberRequest: MemberRequest, @PathVariable memberId: Long) =
         ResponseEntity.ok().body(memberService.update(memberRequest, memberId))
 
+//    로그인
+    @PostMapping("/login")
+    fun login(@RequestBody memberLoginRequest: MemberLoginRequest): ResponseEntity<MemberLoginResponse> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(memberService.login(memberLoginRequest))
+    }
     // 회원 탈퇴
     @DeleteMapping("/members/withdrawal/{memberId}")
     fun withdrawal(@PathVariable memberId: Long) =
