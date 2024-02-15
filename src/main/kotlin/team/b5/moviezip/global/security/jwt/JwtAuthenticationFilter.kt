@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import team.b5.moviezip.global.security.UserPrincipal
+import team.b5.moviezip.global.security.MemberPrincipal
 
 @Component
 class JwtAuthenticationFilter(
@@ -29,13 +29,13 @@ class JwtAuthenticationFilter(
         if (jwt != null) {
             jwtPlugin.validateToken(jwt)
                 .onSuccess {
-                    val userId = it.payload.subject.toLong()
+                    val memberId = it.payload.subject.toLong()
                     val role = it.payload.get("role", String::class.java)
                     val email = it.payload.get("email", String::class.java)
 
 
-                    val principal = UserPrincipal(
-                        id = userId,
+                    val principal = MemberPrincipal(
+                        id = memberId,
                         email = email,
                         roles = setOf(role)
                     )

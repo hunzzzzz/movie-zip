@@ -42,7 +42,6 @@ class MemberController(
             .status(HttpStatus.OK)
             .body(memberService.login(memberLoginRequest))
     }
-    
     // 이메일 찾기
     @PostMapping("/members/find-email")
     fun findEmail(@RequestBody findEmailRequest: FindEmailRequest) =
