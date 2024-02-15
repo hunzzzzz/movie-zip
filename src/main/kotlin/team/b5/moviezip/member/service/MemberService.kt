@@ -34,6 +34,9 @@ class MemberService(
         else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
     }
 
+    // 회원 탈퇴
+    fun withdrawal(memberId: Long) = getMember(memberId).updateForWithdrawal()
+
     // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
     private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
         if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
