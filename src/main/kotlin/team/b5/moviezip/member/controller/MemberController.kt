@@ -1,6 +1,7 @@
 package team.b5.moviezip.member.controller
 
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -23,4 +24,9 @@ class MemberController(
     @PutMapping("/members/{memberId}")
     fun update(@RequestBody memberRequest: MemberRequest, @PathVariable memberId: Long) =
         ResponseEntity.ok().body(memberService.update(memberRequest, memberId))
+
+    // 프로필 조회
+    @GetMapping("/members/{memberId}")
+    fun findMember(@PathVariable memberId: Long) =
+        ResponseEntity.ok().body(memberService.findMember(memberId))
 }
