@@ -49,3 +49,4 @@ gen
 build
 .gradle
 application.yml
+movie.csv
