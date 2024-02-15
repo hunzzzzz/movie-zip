@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.member.dto.request.MemberRequest
 import team.b5.moviezip.member.model.MemberStatus
+import team.b5.moviezip.member.dto.response.MemberResponse
 import team.b5.moviezip.member.repository.MemberRepository
 import java.time.ZonedDateTime
 
@@ -23,6 +24,9 @@ class MemberService(
             memberRepository.save(it.to(passwordEncoder))
         }
 
+    // 프로필 조회
+    fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
+    
     // 프로필 수정
     fun update(memberRequest: MemberRequest, memberId: Long) =
         memberRequest.let {
