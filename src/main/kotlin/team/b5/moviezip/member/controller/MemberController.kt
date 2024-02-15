@@ -1,12 +1,15 @@
 package team.b5.moviezip.member.controller
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import team.b5.moviezip.member.dto.request.MemberLoginRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
+import team.b5.moviezip.member.dto.response.MemberLoginResponse
 import team.b5.moviezip.member.service.MemberService
 import java.net.URI
 
@@ -23,4 +26,12 @@ class MemberController(
     @PutMapping("/members/{memberId}")
     fun update(@RequestBody memberRequest: MemberRequest, @PathVariable memberId: Long) =
         ResponseEntity.ok().body(memberService.update(memberRequest, memberId))
+
+//    로그인
+    @PostMapping("/login")
+    fun login(@RequestBody memberLoginRequest: MemberLoginRequest): ResponseEntity<MemberLoginResponse> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(memberService.login(memberLoginRequest))
+    }
 }
