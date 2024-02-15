@@ -23,7 +23,8 @@ class SecurityConfig {
                     "/h2-console/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/signup"
+                    "/signup",
+                    "/members/find-email",
                 ).permitAll()
                     .anyRequest().authenticated()
             }

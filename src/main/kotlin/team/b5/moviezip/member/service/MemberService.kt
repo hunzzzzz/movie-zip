@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.b5.moviezip.global.util.EmailEncoder
 import team.b5.moviezip.member.dto.request.FindEmailRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
 import team.b5.moviezip.member.model.MemberStatus
@@ -27,17 +28,19 @@ class MemberService(
 
     // 프로필 조회
     fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
-    
+
     // 프로필 수정
     fun update(memberRequest: MemberRequest, memberId: Long) =
         memberRequest.let {
             validateRequest(it, memberId)
             getMember(memberId).update(it)
         }
-    
+
     // 이메일 찾기
     fun findEmail(findEmailRequest: FindEmailRequest) =
-        getMember(findEmailRequest.name, findEmailRequest.phone).email
+        EmailEncoder.encode(
+            email = getMember(findEmailRequest.name, findEmailRequest.phone).email
+        )
 
     // 회원가입 검증
     private fun validateRequest(memberRequest: MemberRequest) {
