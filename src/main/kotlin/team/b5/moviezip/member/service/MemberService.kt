@@ -33,7 +33,7 @@ class MemberService(
     // 이메일 찾기
     fun findEmail(findEmailRequest: FindEmailRequest) =
         EmailEncoder.encode(
-            email = getMember(findEmailRequest.name, findEmailRequest.phone).email
+            email = getMemberByNameAndPhone(findEmailRequest.name, findEmailRequest.phone).email
         )
 
     // 프로필 조회
@@ -63,7 +63,7 @@ class MemberService(
             .filter {
                 it.status == MemberStatus.WITHDRAWN && it.updatedAt.plusDays(90) < ZonedDateTime.now()
             }.map { memberRepository.delete(it) }
-            
+
     //로그인
     fun login(memberLoginRequest: MemberLoginRequest): MemberLoginResponse {
         val member =
@@ -86,10 +86,12 @@ class MemberService(
 
     // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
     private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
-        if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
-            throw Exception("") // TODO
-        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email)?.id != memberId)
-            throw Exception("") // TODO
+        if (memberRepository.existsByNickname(memberRequest.nickname)
+            && getMemberByNickname(memberRequest.nickname).id != memberId
+        ) throw Exception("") // TODO
+        else if (memberRepository.existsByEmail(memberRequest.email)
+            && getMemberByEmail(memberRequest.email).id != memberId
+        ) throw Exception("") // TODO
         else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
     }
 
@@ -98,6 +100,14 @@ class MemberService(
         memberRepository.findByIdOrNull(memberId) ?: throw Exception("") // TODO
 
     // 회원 조회 (name, phone)
-    private fun getMember(name: String, phone: String) =
+    private fun getMemberByNameAndPhone(name: String, phone: String) =
         memberRepository.findByNameAndPhone(name, phone) ?: throw Exception("") // TODO
+
+    // 회원 조회 (nickname)
+    private fun getMemberByNickname(nickname: String) =
+        memberRepository.findByNickname(nickname) ?: throw Exception("") // TODO
+
+    // 회원 조회 (email)
+    private fun getMemberByEmail(email: String) =
+        memberRepository.findByEmail(email) ?: throw Exception("") // TODO
 }
