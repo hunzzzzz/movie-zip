@@ -25,17 +25,24 @@ class Member(
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    val status: MemberStatus
+    var status: MemberStatus
 ) : BaseEntity() {
     @Id
     @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
+    // 프로필 수정
     fun update(memberRequest: MemberRequest) {
         this.name = memberRequest.name
         this.email = memberRequest.email
         this.nickname = memberRequest.nickname
         this.password = memberRequest.password
+    }
+
+    // 회원 탈퇴를 위한 상태 변경
+    fun updateForWithdrawal() {
+        this.nickname = "탈퇴한 회원"
+        this.status = MemberStatus.WITHDRAWN
     }
 }
