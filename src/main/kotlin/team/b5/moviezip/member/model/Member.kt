@@ -20,6 +20,9 @@ class Member(
     @Column(name = "email", nullable = false)
     var email: String,
 
+    @Column(name = "phone", nullable = false)
+    var phone: String,
+
     @Column(name = "password", nullable = false)
     var password: String,
 

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import team.b5.moviezip.member.dto.request.FindEmailRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
 import team.b5.moviezip.member.service.MemberService
 import java.net.URI
@@ -23,4 +24,9 @@ class MemberController(
     @PutMapping("/members/{memberId}")
     fun update(@RequestBody memberRequest: MemberRequest, @PathVariable memberId: Long) =
         ResponseEntity.ok().body(memberService.update(memberRequest, memberId))
+
+    // 이메일 찾기
+    @PostMapping("/members/find-email")
+    fun findEmail(@RequestBody findEmailRequest: FindEmailRequest) =
+        ResponseEntity.ok().body(memberService.findEmail(findEmailRequest))
 }

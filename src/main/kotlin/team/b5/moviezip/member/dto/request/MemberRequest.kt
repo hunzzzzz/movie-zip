@@ -19,6 +19,13 @@ data class MemberRequest(
     @field:Email(message = "올바른 이메일 형식이 아닙니다.")
     val email: String,
 
+    @field:NotBlank(message = "핸드폰 번호는 필수 항목입니다.")
+    @field:Pattern(
+        regexp = "^010-?([0-9]{3,4})-?([0-9]{4})$",
+        message = "올바른 휴대폰 번호 형식이 아닙니다."
+    )
+    val phone: String,
+
     @field:NotBlank(message = "비밀번호는 필수 항목입니다.")
     @field:Pattern(
         regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&+=]).{8,16}$",
@@ -34,6 +41,7 @@ data class MemberRequest(
         name = name,
         nickname = nickname,
         email = email,
+        phone = phone,
         password = passwordEncoder.encode(password),
         status = MemberStatus.NORMAL,
     )
