@@ -5,6 +5,8 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.b5.moviezip.global.util.EmailEncoder
+import team.b5.moviezip.member.dto.request.FindEmailRequest
 import team.b5.moviezip.global.security.jwt.JwtPlugin
 import team.b5.moviezip.member.dto.request.MemberLoginRequest
 import team.b5.moviezip.member.dto.request.MemberRequest
@@ -28,9 +30,15 @@ class MemberService(
             memberRepository.save(it.to(passwordEncoder))
         }
 
+    // 이메일 찾기
+    fun findEmail(findEmailRequest: FindEmailRequest) =
+        EmailEncoder.encode(
+            email = getMember(findEmailRequest.name, findEmailRequest.phone).email
+        )
+
     // 프로필 조회
     fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
-    
+
     // 프로필 수정
     fun update(memberRequest: MemberRequest, memberId: Long) =
         memberRequest.let {
@@ -55,20 +63,7 @@ class MemberService(
             .filter {
                 it.status == MemberStatus.WITHDRAWN && it.updatedAt.plusDays(90) < ZonedDateTime.now()
             }.map { memberRepository.delete(it) }
-
-    // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
-    private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
-        if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
-            throw Exception("") // TODO
-        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email)?.id != memberId)
-            throw Exception("") // TODO
-        else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
-    }
-
-    // 회원 조회
-    private fun getMember(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw Exception("") // TODO
-
+            
     //로그인
     fun login(memberLoginRequest: MemberLoginRequest): MemberLoginResponse {
         val member =
@@ -88,5 +83,21 @@ class MemberService(
             )
         )
     }
+
+    // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
+    private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
+        if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
+            throw Exception("") // TODO
+        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email)?.id != memberId)
+            throw Exception("") // TODO
+        else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
+    }
+
+    // 회원 조회 (memberId)
+    private fun getMember(memberId: Long) =
+        memberRepository.findByIdOrNull(memberId) ?: throw Exception("") // TODO
+
+    // 회원 조회 (name, phone)
+    private fun getMember(name: String, phone: String) =
+        memberRepository.findByNameAndPhone(name, phone) ?: throw Exception("") // TODO
 }
-//
