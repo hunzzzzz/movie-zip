@@ -4,6 +4,7 @@ import com.opencsv.CSVReader
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.b5.moviezip.global.exception.case.DuplicatedLikeException
 import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.global.variables.MovieVariables
@@ -36,11 +37,13 @@ class MovieService(
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =
-        getMovie(movieId).like(getMember(memberPrincipal.id))
+        validateLikeOrDislike(memberPrincipal.id, movieId, "like")
+            .run { getMovie(movieId).like(getMember(memberPrincipal.id)) }
 
     // 싫어요
     fun dislike(memberPrincipal: MemberPrincipal, movieId: Long) =
-        getMovie(movieId).dislike(getMember(memberPrincipal.id))
+        validateLikeOrDislike(memberPrincipal.id, movieId, "dislike")
+            .run { getMovie(movieId).dislike(getMember(memberPrincipal.id)) }
 
     // CSV 데이터 불러오기
     fun getMoviesFromCsvFile(): ArrayList<Movie> {
@@ -92,11 +95,26 @@ class MovieService(
         System.getProperty("user.dir"), "src/main/resources/static/movie.csv"
     ).toString()
 
-    // 영화 조회
-    private fun getMovie(movieId: Long) =
-        movieRepository.findByIdOrNull(movieId) ?: throw ModelNotFoundException("Movie")
+    // 좋아요, 싫어요 중복 검증
+    fun validateLikeOrDislike(memberId: Long, movieId: Long, target: String) {
+        when (target) {
+            "like" -> {
+                if (getMovie(movieId).like.contains(getMember(memberId)))
+                    throw DuplicatedLikeException("좋아요")
+            }
+
+            "dislike" -> {
+                if (getMovie(movieId).dislike.contains(getMember(memberId)))
+                    throw DuplicatedLikeException("싫어요")
+            }
+        }
+    }
 
     // 멤버 조회
     private fun getMember(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member")
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("회원")
+
+    // 영화 조회
+    private fun getMovie(movieId: Long) =
+        movieRepository.findByIdOrNull(movieId) ?: throw ModelNotFoundException("영화")
 }
