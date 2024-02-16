@@ -1,6 +1,8 @@
 package team.b5.moviezip.movie.model
 
 import jakarta.persistence.*
+import team.b5.moviezip.genre.model.Genre
+import team.b5.moviezip.global.model.BaseEntity
 import team.b5.moviezip.member.model.Member
 import java.time.ZonedDateTime
 
@@ -20,27 +22,27 @@ class Movie(
     val audience: String,
 
     @Column(name = "screens")
-    var screens:String?,
+    var screens: String,
 
     @Column(name = "ratings")
-    val ratings: String?,
+    val ratings: String,
 
     @Column(name = "nation")
-  //  @Enumerated(EnumType.STRING)
-    val nation: String?,
+    @Enumerated(EnumType.STRING)
+    val nation: String,
 
     @Column(name = "distributor")
-    val distributor: String?,
+    val distributor: String,
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     val status: MovieStatus,
 
     @Column(name = "description")
-    val description: String?,
+    val description: String,
 
     @Column(name = "director")
-    val director: String?,
+    val director: String,
 
     @Column(name = "search_count")
     var searchCount: Long? = 0,
@@ -49,6 +51,11 @@ class Movie(
     val like: MutableSet<Member>,
 
     @ManyToMany
+    val dislike: MutableSet<Member>,
+
+    @ManyToMany
+    val genre: MutableSet<Genre>
+) : BaseEntity() {
     val dislike: MutableSet<Member>
 ){
     @Id
@@ -63,5 +70,4 @@ class Movie(
     fun dislike(member: Member) {
         this.dislike.add(member)
     }
-
 }
