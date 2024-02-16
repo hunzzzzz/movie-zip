@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.movie.dto.MovieResponse
+import team.b5.moviezip.movie.dto.MovieSearchResult
+import team.b5.moviezip.movie.dto.toMovieSearchResultList
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.repository.MovieSpecifications
@@ -54,9 +56,9 @@ class MovieService(
         return topAudiences.take(20)
     }
 
-    fun getTopSearch(): List<Movie> {
+    fun getTopSearch(): List<MovieSearchResult> {
         val topSearch = movieRepository.findTop10BySearchCountGreaterThanOrderBySearchCountDesc()
-        return topSearch.take(10)
+        return topSearch.take(10).toMovieSearchResultList()
     }
 
 /*    fun addMovies() =

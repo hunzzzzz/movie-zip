@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import team.b5.moviezip.movie.dto.MovieResponse
+import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.service.MovieService
 
@@ -45,8 +46,8 @@ class MovieController(
     }
 
     @GetMapping("/top-search")
-    fun getTopSearch(): ResponseEntity<List<Movie>>{
-        val topSearch:List<Movie> = movieService.getTopSearch()
+    fun getTopSearch(): ResponseEntity<List<MovieSearchResult>>{
+        val topSearch:List<MovieSearchResult> = movieService.getTopSearch()
         return ResponseEntity.status(HttpStatus.OK).body(topSearch)
     }
 
