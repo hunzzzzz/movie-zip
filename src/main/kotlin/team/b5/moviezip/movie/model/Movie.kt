@@ -2,6 +2,7 @@ package team.b5.moviezip.movie.model
 
 import jakarta.persistence.*
 import team.b5.moviezip.global.model.BaseEntity
+import team.b5.moviezip.member.model.Member
 import java.time.ZonedDateTime
 
 @Entity
@@ -35,9 +36,23 @@ class Movie(
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     val status: MovieStatus,
+
+    @ManyToMany
+    val like: MutableSet<Member>,
+
+    @ManyToMany
+    val dislike: MutableSet<Member>
 ) : BaseEntity() {
     @Id
     @Column(name = "movie_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    fun like(member: Member) {
+        this.like.add(member)
+    }
+
+    fun dislike(member: Member) {
+        this.dislike.add(member)
+    }
 }
