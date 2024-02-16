@@ -1,5 +1,6 @@
 package team.b5.moviezip.movie.model
 
 enum class MovieNation {
-    KOREA, JAPAN, USA
+    KOREA, NETHERLANDS, TAIWAN, GERMANY, DENMARK, RUSSIA, MEXICO,
+    USA, BRAZIL, SPAIN, UK, ITALY, INDIA, JAPAN, CHINA, CANADA, FRANCE, HONGKONG
 }

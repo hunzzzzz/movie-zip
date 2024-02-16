@@ -1,6 +1,7 @@
 package team.b5.moviezip.movie.model
 
 import jakarta.persistence.*
+import team.b5.moviezip.genre.model.Genre
 import team.b5.moviezip.global.model.BaseEntity
 import team.b5.moviezip.member.model.Member
 import java.time.ZonedDateTime
@@ -41,7 +42,10 @@ class Movie(
     val like: MutableSet<Member>,
 
     @ManyToMany
-    val dislike: MutableSet<Member>
+    val dislike: MutableSet<Member>,
+
+    @ManyToMany
+    val genre: MutableSet<Genre>
 ) : BaseEntity() {
     @Id
     @Column(name = "movie_id")
