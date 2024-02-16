@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team.b5.moviezip.global.security.UserPrincipal
+import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.member.repository.MemberRepository
 import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.review.dto.ReviewRequest
@@ -51,7 +51,7 @@ class ReviewService(
     @Transactional
     fun createReview(
         movieId: Long,
-        memberPrincipal: UserPrincipal,
+        memberPrincipal: MemberPrincipal,
         request: ReviewRequest
     ) {
         val member = getMemberInfo(memberPrincipal.id)
@@ -72,7 +72,7 @@ class ReviewService(
     @Transactional
     fun updateReview(
         reviewId: Long,
-        memberPrincipal: UserPrincipal,
+        memberPrincipal: MemberPrincipal,
         request: ReviewRequest,
     ) {
         val member = getMemberInfo(memberPrincipal.id)
@@ -91,7 +91,7 @@ class ReviewService(
     @Transactional
     fun deleteReview(
         reviewId: Long,
-        memberPrincipal: UserPrincipal,
+        memberPrincipal: MemberPrincipal,
     ) {
         val member = getMemberInfo(memberPrincipal.id)
         val review = getReviewInfo(reviewId)
@@ -126,15 +126,15 @@ class ReviewService(
         }
 
     // 평균 별점 (소수 둘째 자리 반올림)
-    private fun averageStar(movieId: Long):Double{
-        val reviews= reviewRepository.findAllByMovieIdAndStatus(movieId, ReviewStatus.NORMAL)
-        var star:Int= 0
+    private fun averageStar(movieId: Long): Double {
+        val reviews = reviewRepository.findAllByMovieIdAndStatus(movieId, ReviewStatus.NORMAL)
+        var star: Int = 0
         if (reviews.isEmpty()) throw IllegalStateException("등록된 별점이 없어요.")
-        for (review in reviews){
-            star+= review.rating*10
+        for (review in reviews) {
+            star += review.rating * 10
         }
         star /= reviews.size
-        return star.toDouble()/10
+        return star.toDouble() / 10
 //        return String.format("%.1f",star/reviews.size)
     }
 
