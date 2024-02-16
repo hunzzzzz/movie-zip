@@ -7,9 +7,7 @@ import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import team.b5.moviezip.global.exception.case.DuplicatedValueException
-import team.b5.moviezip.global.exception.case.ModelNotFoundException
-import team.b5.moviezip.global.exception.case.PasswordMismatchException
+import team.b5.moviezip.global.exception.case.*
 import team.b5.moviezip.global.exception.dto.ErrorResponse
 
 @RestControllerAdvice
@@ -41,6 +39,28 @@ class GlobalExceptionHandler(
     // 비밀번호 불일치
     @ExceptionHandler(PasswordMismatchException::class)
     fun handlePasswordMismatchException(e: PasswordMismatchException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    // 비밀번호 재사용
+    @ExceptionHandler(AlreadyUsedPasswordException::class)
+    fun handleAlreadyUsedPasswordException(e: AlreadyUsedPasswordException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    // 좋아요, 싫어요 중복
+    @ExceptionHandler(DuplicatedLikeException::class)
+    fun handleDuplicatedLikeException(e: DuplicatedLikeException) =
         ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ErrorResponse(
                 httpStatus = "400 Bad Request",

@@ -1,8 +1,9 @@
 package team.b5.moviezip.member.model
 
 import jakarta.persistence.*
+import org.springframework.security.crypto.password.PasswordEncoder
 import team.b5.moviezip.global.model.BaseEntity
-import team.b5.moviezip.member.dto.request.MemberRequest
+import team.b5.moviezip.member.dto.request.EditProfileRequest
 
 @Entity
 @Table(name = "Members")
@@ -26,6 +27,9 @@ class Member(
     @Column(name = "password", nullable = false)
     var password: String,
 
+    @Column(name = "password_history", nullable = false)
+    var passwordHistory: String,
+
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     var status: MemberStatus
@@ -36,11 +40,17 @@ class Member(
     val id: Long? = null
 
     // 프로필 수정
-    fun update(memberRequest: MemberRequest) {
-        this.name = memberRequest.name
-        this.email = memberRequest.email
-        this.nickname = memberRequest.nickname
-        this.password = memberRequest.password
+    fun update(editProfileRequest: EditProfileRequest) {
+        this.name = editProfileRequest.name
+        this.email = editProfileRequest.email
+        this.nickname = editProfileRequest.nickname
+        this.phone = editProfileRequest.phone
+    }
+
+    // 비밀번호 변경
+    fun update(newPassword: String, passwordHistory: String, passwordEncoder: PasswordEncoder) {
+        this.password = passwordEncoder.encode(newPassword)
+        this.passwordHistory = passwordHistory
     }
 
     // 회원 탈퇴를 위한 상태 변경
