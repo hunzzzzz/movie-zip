@@ -1,5 +1,7 @@
 package team.b5.moviezip.global.config
 
+
+
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -23,6 +25,8 @@ class SecurityConfig {
                     "/h2-console/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
+                    "/signup",
+                    "/Movies/**",
                     "/signup",
                     "/login",
                     "/members/find-email"

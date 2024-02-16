@@ -1,5 +1,7 @@
 package team.b5.moviezip.movie.model
 
+/*
 enum class MovieNation {
-    KOREA, JAPAN, USA
+    KOREA, JAPAN, USA , ETC
 }
+*/

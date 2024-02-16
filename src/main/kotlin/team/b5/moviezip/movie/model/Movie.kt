@@ -1,7 +1,6 @@
 package team.b5.moviezip.movie.model
 
 import jakarta.persistence.*
-import team.b5.moviezip.global.model.BaseEntity
 import team.b5.moviezip.member.model.Member
 import java.time.ZonedDateTime
 
@@ -11,38 +10,47 @@ class Movie(
     @Column(name = "name", nullable = false)
     val name: String,
 
-    @Column(name = "description", nullable = false)
-    val description: String,
+    @Column(name = "release_at")
+    val releaseAt: ZonedDateTime?,
 
-    @Column(name = "release_at", nullable = false)
-    val releaseAt: ZonedDateTime,
+    @Column(name = "sales")
+    val sales: String,
 
     @Column(name = "audience", nullable = false)
-    val audience: Long,
+    val audience: String,
 
-    @Column(name = "ratings", nullable = false)
-    val ratings: Double,
+    @Column(name = "screens")
+    var screens:String?,
 
-    @Column(name = "nation", nullable = false)
-    @Enumerated(EnumType.STRING)
-    val nation: MovieNation,
+    @Column(name = "ratings")
+    val ratings: String?,
 
-    @Column(name = "distributor", nullable = false)
-    val distributor: String,
+    @Column(name = "nation")
+  //  @Enumerated(EnumType.STRING)
+    val nation: String?,
 
-    @Column(name = "director", nullable = false)
-    val director: String,
+    @Column(name = "distributor")
+    val distributor: String?,
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     val status: MovieStatus,
+
+    @Column(name = "description")
+    val description: String?,
+
+    @Column(name = "director")
+    val director: String?,
+
+    @Column(name = "search_count")
+    var searchCount: Long? = 0,
 
     @ManyToMany
     val like: MutableSet<Member>,
 
     @ManyToMany
     val dislike: MutableSet<Member>
-) : BaseEntity() {
+){
     @Id
     @Column(name = "movie_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +63,5 @@ class Movie(
     fun dislike(member: Member) {
         this.dislike.add(member)
     }
+
 }
