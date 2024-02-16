@@ -42,9 +42,6 @@ class MemberService(
             email = getMemberByNameAndPhone(findEmailRequest.name, findEmailRequest.phone).email
         )
 
-    // 프로필 조회
-    fun findMember(memberId: Long) = MemberResponse.from(getMember(memberId))
-
     // 프로필 수정
     fun update(memberRequest: MemberRequest, memberId: Long) =
         memberRequest.let {
@@ -54,23 +51,6 @@ class MemberService(
 
     // 회원 탈퇴 (신청)
     fun withdrawal(memberId: Long) = getMember(memberId).updateForWithdrawal()
-
-    // 회원 탈퇴 여부를 10초에 한 번씩 확인
-    @Scheduled(fixedDelay = 1000 * 10)
-    fun checkWithdrawal() =
-        memberRepository.findAll()
-            .filter {
-                it.status == MemberStatus.WITHDRAWN && it.updatedAt.plusDays(90) < ZonedDateTime.now()
-            }.map { memberRepository.delete(it) }
-
-    // 프로필 수정 시 검증 (본인이 기존에 사용하던 nickname, email은 검증 대상에서 제외)
-    private fun validateRequest(memberRequest: MemberRequest, memberId: Long) {
-        if (memberRepository.existsByNickname(memberRequest.nickname) && memberRepository.findByNickname(memberRequest.nickname).id != memberId)
-            throw Exception("") // TODO
-        else if (memberRepository.existsByEmail(memberRequest.email) && memberRepository.findByEmail(memberRequest.email)?.id != memberId)
-            throw Exception("") // TODO
-        else if (memberRequest.password != memberRequest.password2) throw Exception("") // TODO
-    }
 
     // 회원 탈퇴 여부를 10초에 한 번씩 확인
     @Scheduled(fixedDelay = 1000 * 10)
