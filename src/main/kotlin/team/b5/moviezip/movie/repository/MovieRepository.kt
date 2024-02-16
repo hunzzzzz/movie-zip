@@ -6,4 +6,5 @@ import team.b5.moviezip.movie.model.Movie
 
 @Repository
 interface MovieRepository : JpaRepository<Movie, Long> {
+    fun findByName(name: String): Movie?
 }
