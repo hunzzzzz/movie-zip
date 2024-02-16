@@ -37,12 +37,22 @@ class Movie(
     @Enumerated(EnumType.STRING)
     val status: MovieStatus,
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    val member: Member
+    @ManyToMany
+    val like: MutableSet<Member>,
+
+    @ManyToMany
+    val dislike: MutableSet<Member>
 ) : BaseEntity() {
     @Id
     @Column(name = "movie_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    fun like(member: Member) {
+        this.like.add(member)
+    }
+
+    fun dislike(member: Member) {
+        this.dislike.add(member)
+    }
 }

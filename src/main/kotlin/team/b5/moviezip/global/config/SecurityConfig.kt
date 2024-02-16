@@ -24,7 +24,8 @@ class SecurityConfig {
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/signup",
-                    "/login"
+                    "/login",
+                    "/members/find-email"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
