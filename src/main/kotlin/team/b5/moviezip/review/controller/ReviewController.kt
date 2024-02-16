@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
-import team.b5.moviezip.global.security.UserPrincipal
+import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.review.dto.ReviewRequest
 import team.b5.moviezip.review.dto.ReviewResponse
 import team.b5.moviezip.review.service.ReviewService
@@ -36,7 +36,7 @@ class ReviewController(
     @PostMapping
     fun createReview(
         @PathVariable movieId: Long,
-        @AuthenticationPrincipal memberPrincipal: UserPrincipal,
+        @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @RequestBody reviewRequest: ReviewRequest,
     ): ResponseEntity<String> {
         reviewService.createReview(movieId, memberPrincipal, reviewRequest)
@@ -50,7 +50,7 @@ class ReviewController(
     fun updateReview(
 //        @PathVariable movieId: Long,
         @PathVariable reviewId: Long,
-        @AuthenticationPrincipal memberPrincipal: UserPrincipal,
+        @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @RequestBody reviewRequest: ReviewRequest,
     ): ResponseEntity<String> {
         reviewService.updateReview(reviewId, memberPrincipal, reviewRequest)
@@ -64,7 +64,7 @@ class ReviewController(
     fun deleteReview(
 //        @PathVariable movieId: Long,
         @PathVariable reviewId: Long,
-        @AuthenticationPrincipal memberPrincipal: UserPrincipal,
+        @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
     ): ResponseEntity<String> {
         reviewService.deleteReview(reviewId, memberPrincipal)
         return ResponseEntity

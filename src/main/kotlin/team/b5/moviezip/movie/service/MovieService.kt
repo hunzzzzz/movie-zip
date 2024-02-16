@@ -9,7 +9,6 @@ import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.global.variables.MovieVariables
 import team.b5.moviezip.member.repository.MemberRepository
-import team.b5.moviezip.global.variables.MovieVariables
 import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.model.MovieNation

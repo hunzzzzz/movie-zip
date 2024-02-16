@@ -1,6 +1,5 @@
 package team.b5.moviezip.movie.dto.response
 
-import team.b5.moviezip.member.model.Member
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.review.model.Review
 import java.time.ZonedDateTime
@@ -20,7 +19,7 @@ data class MovieResponse(
     val dislike: Int
 ) {
     companion object {
-        fun from(movie: Movie, like: MutableSet<Member>, dislike: MutableSet<Member>) = MovieResponse(
+        fun from(movie: Movie) = MovieResponse(
             name = movie.name,
             description = movie.description,
             releaseAt = movie.releaseAt,
@@ -31,8 +30,8 @@ data class MovieResponse(
             director = movie.director,
             status = movie.status.name,
             reviews = listOf(), // TODO
-            like = like.size,
-            dislike = dislike.size
+            like = movie.like.size,
+            dislike = movie.dislike.size
         )
     }
 }
