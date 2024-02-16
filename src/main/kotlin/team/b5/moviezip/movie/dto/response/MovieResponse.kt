@@ -1,9 +1,6 @@
 package team.b5.moviezip.movie.dto.response
 
-import team.b5.moviezip.movie.model.Movie
-import team.b5.moviezip.review.model.Review
-import java.time.ZonedDateTime
-
+/*
 data class MovieResponse(
     val name: String,
     val description: String,
@@ -34,4 +31,4 @@ data class MovieResponse(
             dislike = movie.dislike.size
         )
     }
-}
+}*/

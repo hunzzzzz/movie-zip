@@ -15,5 +15,5 @@ interface MovieRepository : JpaRepository<Movie, Long>, JpaSpecificationExecutor
     @Query("SELECT m FROM Movie m WHERE m.searchCount > 0 ORDER BY m.searchCount DESC")
     fun findTop10BySearchCountGreaterThanOrderBySearchCountDesc(): List<Movie>
 
-//    fun findByName(name: String): Movie?
+    fun findByName(name: String): Movie?
 }

@@ -1,18 +1,14 @@
 package team.b5.moviezip.movie.service
 
-import com.opencsv.CSVReader
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.global.exception.case.DuplicatedLikeException
 import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
-import team.b5.moviezip.global.variables.MovieVariables
 import team.b5.moviezip.member.repository.MemberRepository
-import team.b5.moviezip.movie.dto.response.MovieResponse
-import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.movie.dto.MovieResponse
 import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.toMovieSearchResultList
@@ -24,13 +20,14 @@ import team.b5.moviezip.movie.repository.MovieSpecifications
 @Transactional
 class MovieService(
     private val movieRepository: MovieRepository,
+    private val memberRepository: MemberRepository
 
     ) {
     fun getAllMovies(pageable: Pageable): Page<Movie> {
         return movieRepository.findAll(pageable)
     }
 
-    fun getMovie(movieId: Long): MovieResponse {
+    fun getMovies(movieId: Long): MovieResponse {
         val movieOptional = movieRepository.findById(movieId)
         val movie = movieOptional.orElseThrow { ModelNotFoundException("movie") }
         return MovieResponse.from(movie)
@@ -58,7 +55,6 @@ class MovieService(
         movieRepository.saveAll(movies)
     }
 
-
     fun getTopAudience(): List<Movie> {
         val topAudiences = movieRepository.findTop20MoviesByAudience()
         return topAudiences.take(20)
@@ -68,6 +64,39 @@ class MovieService(
         val topSearch = movieRepository.findTop10BySearchCountGreaterThanOrderBySearchCountDesc()
         return topSearch.take(10).toMovieSearchResultList()
     }
+
+    // 좋아요
+    fun like(memberPrincipal: MemberPrincipal, movieId: Long) =
+        validateLikeOrDislike(memberPrincipal.id, movieId, "like")
+            .run { getMovie(movieId).like(getMember(memberPrincipal.id)) }
+
+    // 싫어요
+    fun dislike(memberPrincipal: MemberPrincipal, movieId: Long) =
+        validateLikeOrDislike(memberPrincipal.id, movieId, "dislike")
+            .run { getMovie(movieId).dislike(getMember(memberPrincipal.id)) }
+
+
+    fun validateLikeOrDislike(memberId: Long, movieId: Long, target: String) {
+        when (target) {
+            "like" -> {
+                if (getMovie(movieId).like.contains(getMember(memberId)))
+                    throw DuplicatedLikeException("좋아요")
+            }
+
+            "dislike" -> {
+                if (getMovie(movieId).dislike.contains(getMember(memberId)))
+                    throw DuplicatedLikeException("싫어요")
+            }
+        }
+    }
+
+    private fun getMember(memberId: Long) =
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("회원")
+
+    private fun getMovie(movieId: Long) =
+        movieRepository.findByIdOrNull(movieId) ?: throw ModelNotFoundException("영화")
+
+
 
 /*    fun addMovies() =
         getMoviesFromCsvFile().forEach { movieRepository.save(it) }

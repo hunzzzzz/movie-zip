@@ -1,7 +1,6 @@
 package team.b5.moviezip.movie.model
 
 import jakarta.persistence.*
-import team.b5.moviezip.global.model.BaseEntity
 import team.b5.moviezip.member.model.Member
 import java.time.ZonedDateTime
 
@@ -27,8 +26,8 @@ class Movie(
     val ratings: String?,
 
     @Column(name = "nation")
-    @Enumerated(EnumType.STRING)
-    val nation: MovieNation,
+  //  @Enumerated(EnumType.STRING)
+    val nation: String?,
 
     @Column(name = "distributor")
     val distributor: String?,
@@ -56,6 +55,7 @@ class Movie(
     @Column(name = "movie_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
     fun like(member: Member) {
         this.like.add(member)
     }

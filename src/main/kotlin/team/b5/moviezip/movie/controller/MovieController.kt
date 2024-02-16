@@ -5,12 +5,8 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import team.b5.moviezip.global.security.MemberPrincipal
 import org.springframework.web.bind.annotation.*
+import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.movie.dto.MovieResponse
 import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.model.Movie
@@ -30,8 +26,8 @@ class MovieController(
     }
 
     @GetMapping("/{movieId}")
-    fun getMovie(@PathVariable movieId:Long):ResponseEntity<MovieResponse>{
-        return ResponseEntity.status(HttpStatus.OK).body(movieService.getMovie(movieId))
+    fun getMovies(@PathVariable movieId:Long):ResponseEntity<MovieResponse>{
+        return ResponseEntity.status(HttpStatus.OK).body(movieService.getMovies(movieId))
     }
 
     @GetMapping("/search")

@@ -1,7 +1,6 @@
 package team.b5.moviezip.movie.dto
 
 import team.b5.moviezip.movie.model.Movie
-import team.b5.moviezip.movie.model.MovieNation
 import java.time.ZonedDateTime
 
 data class MovieResponse(
@@ -16,7 +15,9 @@ data class MovieResponse(
     val distributor: String?,
     val sales:String,
     val screen:String?,
-    val nation:MovieNation
+    val nation:String?,
+    val like: Int,
+    val dislike: Int,
 ) {
     companion object {
         fun from(movie: Movie): MovieResponse {
@@ -32,7 +33,9 @@ data class MovieResponse(
                 director = movie.director,
                 sales = movie.sales,
                 screen = movie.screens,
-                nation = movie.nation
+                nation = movie.nation,
+                like = movie.like.size,
+                dislike = movie.dislike.size,
 
             )
         }
