@@ -8,6 +8,8 @@ import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.global.variables.MovieVariables
 import team.b5.moviezip.member.repository.MemberRepository
+import team.b5.moviezip.global.variables.MovieVariables
+import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.model.MovieNation
 import team.b5.moviezip.movie.model.MovieStatus
@@ -27,8 +29,10 @@ class MovieService(
     private val memberRepository: MemberRepository
 ) {
     // 영화 데이터 등록
-    fun addMovies() =
-        getMoviesFromCsvFile().forEach { movieRepository.save(it) }
+    fun addMovies() = getMoviesFromCsvFile().forEach { movieRepository.save(it) }
+
+    // 영화 단건 조회
+    fun findMovie(movieId: Long) = MovieResponse.from(getMovie(movieId))
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =
@@ -39,7 +43,7 @@ class MovieService(
         getMovie(movieId).dislike(getMember(memberPrincipal.id))
 
     // CSV 데이터 불러오기
-    private fun getMoviesFromCsvFile(): ArrayList<Movie> {
+    fun getMoviesFromCsvFile(): ArrayList<Movie> {
         val movies = arrayListOf<Movie>()
         val csvReader = CSVReader(
             InputStreamReader(FileInputStream(getPath()))
@@ -88,11 +92,11 @@ class MovieService(
         System.getProperty("user.dir"), "src/main/resources/static/movie.csv"
     ).toString()
 
-    // 멤버 조회
-    private fun getMember(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member")
-
     // 영화 조회
     private fun getMovie(movieId: Long) =
         movieRepository.findByIdOrNull(movieId) ?: throw ModelNotFoundException("Movie")
+
+    // 멤버 조회
+    private fun getMember(memberId: Long) =
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member")
 }

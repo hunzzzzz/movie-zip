@@ -6,17 +6,17 @@ import team.b5.moviezip.member.model.Member
 import team.b5.moviezip.movie.model.Movie
 
 @Entity
-@Table(name = "Reviews")
+@Table(name = "reviews")
 class Review(
     @Column(name = "content", nullable = false)
-    val content: String,
+    var content: String,
 
     @Column(name = "rating", nullable = false)
-    val rating: Int,
+    var rating: Int,
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    val status: ReviewStatus,
+    var status: ReviewStatus,
 
     @ManyToOne
     @JoinColumn(name = "movie_id")
@@ -25,6 +25,7 @@ class Review(
     @ManyToOne
     @JoinColumn(name = "member_id")
     val member: Member
+
 ) : BaseEntity() {
     @Id
     @Column(name = "review_id")
