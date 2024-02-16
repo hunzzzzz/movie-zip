@@ -18,19 +18,21 @@ class MovieController(
     @GetMapping
     fun addMovies() = ResponseEntity.ok().body(movieService.addMovies())
 
+    // 영화 단건 조회
+    @GetMapping("/{movieId}")
+    fun findMovie(@PathVariable movieId: Long) = ResponseEntity.ok().body(movieService.findMovie(movieId))
+
     // 좋아요
     @GetMapping("/{movieId}/like")
     fun like(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @PathVariable movieId: Long
-    ) =
-        ResponseEntity.ok().body(movieService.like(memberPrincipal, movieId))
+    ) = ResponseEntity.ok().body(movieService.like(memberPrincipal, movieId))
 
     // 싫어요
     @GetMapping("/{movieId}/dislike")
     fun dislike(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @PathVariable movieId: Long
-    ) =
-        ResponseEntity.ok().body(movieService.dislike(memberPrincipal, movieId))
+    ) = ResponseEntity.ok().body(movieService.dislike(memberPrincipal, movieId))
 }
