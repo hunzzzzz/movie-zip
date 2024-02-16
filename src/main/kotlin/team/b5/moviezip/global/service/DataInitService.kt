@@ -57,6 +57,7 @@ class DataInitService(
     }
 
     // CSV 데이터를 엔티티로 변환
+    // data = {영화명(0), 개봉일(1), 누적매출액(2), 누적관객수(3), 스크린수(4), 대표국적(5), 배급사(6), 등급(7), 장르(8), 감독(9), 배우(10)}
     private fun csvToEntity(data: Array<String>) =
         Movie(
             name = data[0],
@@ -68,17 +69,17 @@ class DataInitService(
                 ).atStartOfDay(),
                 ZoneId.of("Asia/Seoul")
             ),
-            audience = data[2].replace(",", "").toLong(),
-            ratings = 0.0,
-            nation = MovieNation.valueOf(
-                MovieVariables.movieNationMap[data[3]]!!
-            ),
-            distributor = data[4],
-            director = "",
+            sales = data[2].replace(",", ""), // TODO
+            audience = data[3].replace(",", ""), // TODO
+            screens = data[4].replace(",", ""), // TODO
+            ratings = "0.0", // TODO
+            nation = data[5],
+            distributor = data[6],
+            genre = getGenreFromCsvData(data[8]),
+            director = data[9],
             status = MovieStatus.NORMAL,
             like = mutableSetOf(),
-            dislike = mutableSetOf(),
-            genre = getGenreFromCsvData(data[6])
+            dislike = mutableSetOf()
         ).let {
             println(it.name)
             it
@@ -89,9 +90,11 @@ class DataInitService(
         data[0].isEmpty() || movies.any { it.name == data[0] }
                 || data[1].isEmpty()
                 || data[2].isEmpty() || data[2].replace(",", "").toLongOrNull() == null
-                || data[3].isEmpty() || !MovieVariables.movieNationMap.containsKey(data[3])
-                || data[4].isEmpty()
+                || data[3].isEmpty() || data[3].replace(",", "").toLongOrNull() == null
+                || data[4].isEmpty() || data[4].replace(",", "").toLongOrNull() == null
+                || data[5].isEmpty() || !MovieVariables.movieNationMap.containsKey(data[5])
                 || data[6].isEmpty()
+                || data[8].isEmpty()
 
     // 경로
     private fun getPath() = Paths.get(
