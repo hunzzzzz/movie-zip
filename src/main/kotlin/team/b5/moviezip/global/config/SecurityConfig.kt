@@ -28,6 +28,12 @@ class SecurityConfig {
                 ).permitAll()
                     .anyRequest().authenticated()
             }
+//            .logout {
+//                it.logoutUrl("/logout")
+//                    .logoutSuccessUrl("/login")
+//                    .deleteCookies("Set-Cookie")
+//                    .invalidateHttpSession(true)
+//            }
             .build()
     }
 
