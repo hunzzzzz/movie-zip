@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import team.b5.moviezip.member.dto.request.FindEmailRequest
-import team.b5.moviezip.member.dto.request.MemberLoginRequest
-import team.b5.moviezip.member.dto.request.MemberRequest
+import team.b5.moviezip.member.dto.request.*
 import team.b5.moviezip.member.dto.response.MemberLoginResponse
 import team.b5.moviezip.member.service.MemberService
 import java.net.URI
@@ -22,18 +20,23 @@ class MemberController(
 ) {
     // 회원가입
     @PostMapping("/signup")
-    fun signup(@RequestBody memberRequest: MemberRequest) =
-        ResponseEntity.created(URI.create("/")).body(memberService.signup(memberRequest))
+    fun signup(@RequestBody signupRequest: SignupRequest) =
+        ResponseEntity.created(URI.create("/")).body(memberService.signup(signupRequest))
 
     // 프로필 조회
     @GetMapping("/members/{memberId}")
     fun findMember(@PathVariable memberId: Long) =
         ResponseEntity.ok().body(memberService.findMember(memberId))
-        
+
     // 프로필 수정
-    @PutMapping("/members/{memberId}")
-    fun update(@RequestBody memberRequest: MemberRequest, @PathVariable memberId: Long) =
-        ResponseEntity.ok().body(memberService.update(memberRequest, memberId))
+    @PutMapping("/members/edit-profile/{memberId}")
+    fun update(@RequestBody editProfileRequest: EditProfileRequest, @PathVariable memberId: Long) =
+        ResponseEntity.ok().body(memberService.updateProfile(editProfileRequest, memberId))
+
+    // 비밀번호 변경
+    @PutMapping("/members/edit-password/{memberId}")
+    fun update(@RequestBody passwordRequest: EditPasswordRequest, @PathVariable memberId: Long) =
+        ResponseEntity.ok().body(memberService.updatePassword(passwordRequest, memberId))
 
     // 로그인
     @PostMapping("/login")
@@ -42,6 +45,7 @@ class MemberController(
             .status(HttpStatus.OK)
             .body(memberService.login(memberLoginRequest))
     }
+
     // 이메일 찾기
     @PostMapping("/members/find-email")
     fun findEmail(@RequestBody findEmailRequest: FindEmailRequest) =
