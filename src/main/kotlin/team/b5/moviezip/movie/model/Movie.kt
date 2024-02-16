@@ -19,17 +19,17 @@ class Movie(
     val sales: String,
 
     @Column(name = "audience", nullable = false)
-    val audience: String,
+    val audience: String, // TODO : 추후 Long으로 변경
 
     @Column(name = "screens")
-    var screens: String,
+    var screens: String?, // TODO : 추후 Int로 변경
 
     @Column(name = "ratings")
-    val ratings: String,
+    val ratings: String, // TODO : 추후 Double로 변경
 
     @Column(name = "nation")
-    @Enumerated(EnumType.STRING)
-    val nation: String,
+//    @Enumerated(EnumType.STRING)
+    val nation: String, // TODO : 추후 MovieNation으로 변경
 
     @Column(name = "distributor")
     val distributor: String,
@@ -56,8 +56,6 @@ class Movie(
     @ManyToMany
     val genre: MutableSet<Genre>
 ) : BaseEntity() {
-    val dislike: MutableSet<Member>
-){
     @Id
     @Column(name = "movie_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

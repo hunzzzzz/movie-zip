@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal=
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,20 +16,19 @@ import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.service.MovieService
 
-
 @RestController
-@RequestMapping("/Movies")
+@RequestMapping("/movies")
 class MovieController(
     private val movieService: MovieService
 ) {
-    @GetMapping()
-    fun getAllMovies(pageable: Pageable):ResponseEntity<Page<Movie>>{
+    @GetMapping
+    fun getAllMovies(pageable: Pageable): ResponseEntity<Page<Movie>> {
         val moviesPage: Page<Movie> = movieService.getAllMovies(pageable)
         return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
     }
 
     @GetMapping("/{movieId}")
-    fun getMovies(@PathVariable movieId:Long):ResponseEntity<MovieResponse>{
+    fun getMovies(@PathVariable movieId: Long): ResponseEntity<MovieResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(movieService.getMovies(movieId))
     }
 
@@ -40,7 +39,7 @@ class MovieController(
         @RequestParam(required = false) distributor: String?,
         pageable: Pageable
     ): ResponseEntity<Page<Movie>> {
-        val moviesPage:Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
+        val moviesPage: Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
         return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
     }
 
@@ -51,17 +50,10 @@ class MovieController(
     }
 
     @GetMapping("/top-search")
-    fun getTopSearch(): ResponseEntity<List<MovieSearchResult>>{
-        val topSearch:List<MovieSearchResult> = movieService.getTopSearch()
+    fun getTopSearch(): ResponseEntity<List<MovieSearchResult>> {
+        val topSearch: List<MovieSearchResult> = movieService.getTopSearch()
         return ResponseEntity.status(HttpStatus.OK).body(topSearch)
     }
-
-/*    @GetMapping("/add-movies")
-    fun addMovies() = ResponseEntity.ok().body(movieService.addMovies())*/
-
-    // 영화 단건 조회 (name)
-    @GetMapping
-    fun findMovieByName(@RequestParam name: String) = ResponseEntity.ok().body(movieService.findMovieByName(name))
 
     // 좋아요
     @GetMapping("/{movieId}/like")
