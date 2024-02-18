@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.WebRequest
 import team.b5.moviezip.global.exception.case.*
 import team.b5.moviezip.global.exception.dto.ErrorResponse
 
@@ -68,6 +70,18 @@ class GlobalExceptionHandler(
                 path = httpServletRequest.requestURI
             )
         )
+
+    // 댓글 중복
+    @ExceptionHandler(IllegalStateException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleIllegalStateException(e: IllegalStateException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            httpStatus = "400 Bad Request",
+            message = e.message .toString(),
+            path = httpServletRequest.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
 
     // Validation 미통과
     @ExceptionHandler(MethodArgumentNotValidException::class)

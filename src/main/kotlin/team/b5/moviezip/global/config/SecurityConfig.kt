@@ -27,7 +27,9 @@ class SecurityConfig {
                     "/v3/api-docs/**",
                     "/signup",
                     "/login",
-                    "/members/find-email"
+                    "/members/find-email",
+                    "/movies/**",
+                    "/{movieId}/review/**"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
