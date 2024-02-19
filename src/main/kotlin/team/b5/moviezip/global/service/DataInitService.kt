@@ -61,7 +61,6 @@ class DataInitService(
     private fun csvToEntity(data: Array<String>) =
         Movie(
             name = data[0],
-            description = "",
             releaseAt = ZonedDateTime.of(
                 LocalDate.parse(
                     data[1],
@@ -69,24 +68,22 @@ class DataInitService(
                 ).atStartOfDay(),
                 ZoneId.of("Asia/Seoul")
             ),
-            sales = data[2].replace(",", ""), // TODO
-            audience = 0, // TODO
-            screens = 0, // TODO
-            ratings = 0.0, // TODO
-            nation = MovieNation.기타,
+            sales = data[2].replace(",", "").toLong(),
+            audience = data[3].replace(",", "").toLong(),
+            screens = data[4].replace(",", "").toInt(),
+            nation = MovieNation.valueOf(MovieVariables.movieNationMap[data[5]]!!),
             distributor = data[6],
+            ageLimit = data[7], // TODO
             genre = getGenreFromCsvData(data[8]),
             director = data[9],
+            actor = data[10], // TODO
+
+            description = "",
+            ratings = 0.0, // TODO
             status = MovieStatus.NORMAL,
             like = mutableSetOf(),
             dislike = mutableSetOf(),
-            actor = data[10],
-            ageLimit = data[11],
-
-        ).let {
-            println(it.name)
-            it
-        }
+        )
 
     // CSV 데이터 검증
     private fun invalidateCsvData(data: Array<String>, movies: ArrayList<Movie>) =
@@ -94,7 +91,7 @@ class DataInitService(
                 || data[1].isEmpty()
                 || data[2].isEmpty() || data[2].replace(",", "").toLongOrNull() == null
                 || data[3].isEmpty() || data[3].replace(",", "").toLongOrNull() == null
-                || data[4].isEmpty() || data[4].replace(",", "").toLongOrNull() == null
+                || data[4].isEmpty() || data[4].replace(",", "").toIntOrNull() == null
                 || data[5].isEmpty() || !MovieVariables.movieNationMap.containsKey(data[5])
                 || data[6].isEmpty()
                 || data[8].isEmpty()
