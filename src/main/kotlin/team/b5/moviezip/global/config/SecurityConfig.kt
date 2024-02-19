@@ -29,7 +29,8 @@ class SecurityConfig {
                     "/login",
                     "/members/find-email",
                     "/movies/**",
-                    "/{movieId}/review/**"
+                    "/movies/{movieId}/review/**"
+                    "/**" // TODO : 추후 삭제
                 ).permitAll()
                     .anyRequest().authenticated()
             }

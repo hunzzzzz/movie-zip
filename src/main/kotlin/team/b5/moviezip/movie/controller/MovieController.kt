@@ -21,38 +21,16 @@ import team.b5.moviezip.movie.service.MovieService
 class MovieController(
     private val movieService: MovieService
 ) {
+    // 영화 전체 조회
+    // TODO: 검색 조건 미설정
     @GetMapping
-    fun getAllMovies(pageable: Pageable): ResponseEntity<Page<Movie>> {
-        val moviesPage: Page<Movie> = movieService.getAllMovies(pageable)
-        return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
-    }
+    fun getAllMovies(@RequestParam(defaultValue = "0") page: Int) =
+        ResponseEntity.ok().body(movieService.getAllMovies(page))
 
+    // 영화 단건 조회
     @GetMapping("/{movieId}")
     fun getMovies(@PathVariable movieId: Long): ResponseEntity<MovieResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(movieService.getMovies(movieId))
-    }
-
-    @GetMapping("/search")
-    fun searchMovies(
-        @RequestParam(required = false) name: String?,
-        @RequestParam(required = false) nation: String?,
-        @RequestParam(required = false) distributor: String?,
-        pageable: Pageable
-    ): ResponseEntity<Page<Movie>> {
-        val moviesPage: Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
-        return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
-    }
-
-    @GetMapping("/top-audience")
-    fun getTopAudiences(): ResponseEntity<List<Movie>> {
-        val topAudiences = movieService.getTopAudience()
-        return ResponseEntity.status(HttpStatus.OK).body(topAudiences)
-    }
-
-    @GetMapping("/top-search")
-    fun getTopSearch(): ResponseEntity<List<MovieSearchResult>> {
-        val topSearch: List<MovieSearchResult> = movieService.getTopSearch()
-        return ResponseEntity.status(HttpStatus.OK).body(topSearch)
     }
 
     // 좋아요
@@ -68,4 +46,34 @@ class MovieController(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
         @PathVariable movieId: Long
     ) = ResponseEntity.ok().body(movieService.dislike(memberPrincipal, movieId))
+
+    /*
+        검색 기능 V1 (QueryDSL 사용)
+     */
+    @GetMapping("/api/v1/search")
+    fun searchMovies(
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) nation: String?,
+        @RequestParam(required = false) distributor: String?,
+        pageable: Pageable
+    ): ResponseEntity<Page<Movie>> {
+        val moviesPage: Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
+        return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
+    }
+
+    @GetMapping("/api/v1/top-audience")
+    fun getTopAudiences(): ResponseEntity<List<Movie>> {
+        val topAudiences = movieService.getTopAudience()
+        return ResponseEntity.status(HttpStatus.OK).body(topAudiences)
+    }
+
+    @GetMapping("/api/v1/top-search")
+    fun getTopSearch(): ResponseEntity<List<MovieSearchResult>> {
+        val topSearch: List<MovieSearchResult> = movieService.getTopSearch()
+        return ResponseEntity.status(HttpStatus.OK).body(topSearch)
+    }
+
+    /*
+        검색 기능 V2 (Redis 사용)
+     */
 }

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.stereotype.Component
+import team.b5.moviezip.global.exception.dto.ErrorResponse
 
 @Component
 class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
@@ -20,7 +21,13 @@ class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
         response.characterEncoding = "UTF-8"
 
         val objectMapper = ObjectMapper()
-        val jsonString = objectMapper.writeValueAsString(ErrorResponse("JWT verification failed"))
+        val jsonString = objectMapper.writeValueAsString(
+            ErrorResponse(
+                httpStatus = "401 Unauthorized",
+                message = "JWT 검증 실패",
+                path = request.requestURI.toString()
+            )
+        )
         response.writer.write(jsonString)
     }
 }

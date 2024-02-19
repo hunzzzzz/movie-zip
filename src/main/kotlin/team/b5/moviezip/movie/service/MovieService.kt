@@ -2,6 +2,8 @@ package team.b5.moviezip.movie.service
 
 
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -16,6 +18,7 @@ import team.b5.moviezip.movie.dto.toMovieSearchResultList
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.repository.MovieSpecifications
+import kotlin.math.min
 
 @Service
 @Transactional
@@ -23,16 +26,22 @@ class MovieService(
     private val movieRepository: MovieRepository,
     private val memberRepository: MemberRepository
 ) {
-    fun getAllMovies(pageable: Pageable): Page<Movie> {
-        return movieRepository.findAll(pageable)
-    }
+    // 영화 전체 조회
+    fun getAllMovies(page: Int) =
+        PageRequest.of(page, 10).let {
+            movieRepository.findAll(it).map { movie -> MovieResponse.from(movie) }
+        }
 
-    fun getMovies(movieId: Long): MovieResponse {
-        val movieOptional = movieRepository.findById(movieId)
-        val movie = movieOptional.orElseThrow { ModelNotFoundException("movie") }
-        return MovieResponse.from(movie)
+//    Page<Movie>
+//    {
+//        val pageable = PageRequest.of(page, 10)
+//        val start = pageable.offset.toInt()
+//        val end = min(start + pageable.pageSize, filteredList.size)
+//        return PageImpl()
+//    }
 
-    }
+    // 영화 단건 조회
+    fun getMovies(movieId: Long) = MovieResponse.from(getMovie(movieId))
 
     fun searchMovies(name: String?, nation: String?, distributor: String?, pageable: Pageable): Page<Movie> {
         val specification = MovieSpecifications.searchMovies(name, nation, distributor)

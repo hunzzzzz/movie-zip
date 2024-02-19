@@ -12,7 +12,7 @@ import team.b5.moviezip.review.dto.ReviewResponse
 import team.b5.moviezip.review.service.ReviewService
 
 @RestController
-@RequestMapping("/{movieId}/review")
+@RequestMapping("/movies/{movieId}/review")
 class ReviewController(
     private val reviewService: ReviewService
 ) {
