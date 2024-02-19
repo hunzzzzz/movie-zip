@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.WebRequest
 import team.b5.moviezip.global.exception.case.*
 import team.b5.moviezip.global.exception.dto.ErrorResponse
 
@@ -69,6 +71,18 @@ class GlobalExceptionHandler(
             )
         )
 
+    // 댓글 중복
+    @ExceptionHandler(IllegalStateException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleIllegalStateException(e: IllegalStateException, request: WebRequest): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse(
+            httpStatus = "400 Bad Request",
+            message = e.message .toString(),
+            path = httpServletRequest.requestURI
+        )
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
     // Validation 미통과
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException) =
@@ -81,6 +95,28 @@ class GlobalExceptionHandler(
                     it as FieldError
                     it.field
                 }
+            )
+        )
+
+    // 잘못된 요청
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    // 작성자 불일치
+    @ExceptionHandler(MemberNotMatchedException::class)
+    fun handleMemberNotMatchedException(e: MemberNotMatchedException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
             )
         )
 }

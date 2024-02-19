@@ -1,5 +1,7 @@
 package team.b5.moviezip.global.config
 
+
+
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -25,7 +27,10 @@ class SecurityConfig {
                     "/v3/api-docs/**",
                     "/signup",
                     "/login",
-                    "/members/find-email"
+                    "/members/find-email",
+                    "/movies/**",
+                    "/movies/{movieId}/review/**"
+                    "/**" // TODO : 추후 삭제
                 ).permitAll()
                     .anyRequest().authenticated()
             }

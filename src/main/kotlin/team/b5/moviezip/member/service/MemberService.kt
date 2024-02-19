@@ -62,8 +62,8 @@ class MemberService(
     // 회원 탈퇴 (신청)
     fun withdrawal(memberId: Long) = getMember(memberId).updateForWithdrawal()
 
-    // 회원 탈퇴 여부를 10초에 한 번씩 확인
-    @Scheduled(fixedDelay = 1000 * 10)
+    // 회원 탈퇴 여부를 2시간에 한 번씩 확인
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 2)
     fun checkWithdrawal() =
         memberRepository.findAll()
             .filter {
