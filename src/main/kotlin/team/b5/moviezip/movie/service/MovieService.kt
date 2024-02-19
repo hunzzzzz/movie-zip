@@ -14,8 +14,10 @@ import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.dto.toMovieSearchResultList
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.repository.MovieSpecifications
+import team.b5.moviezip.movie.repository.MovieRepositoryImpl
 import team.b5.moviezip.review.dto.ReviewResponse
 import team.b5.moviezip.review.model.ReviewStatus
 import team.b5.moviezip.review.repository.ReviewRepository
@@ -25,14 +27,9 @@ import team.b5.moviezip.review.repository.ReviewRepository
 class MovieService(
     private val movieRepository: MovieRepository,
     private val reviewRepository: ReviewRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val movieRepositoryImpl: MovieRepositoryImpl
 ) {
-    // 영화 전체 조회
-    fun getAllMovies(page: Int) =
-        PageRequest.of(page, 10).let {
-            movieRepository.findAll(it).map { movie -> MovieResponse.from(movie, getAllReviews(movie.id!!)) }
-        }
-
     // 영화 단건 조회
     fun getMovies(movieId: Long) =
         MovieResponse.from(getMovie(movieId), getAllReviews(movieId))
@@ -67,6 +64,19 @@ class MovieService(
         val topSearch = movieRepository.findTop10BySearchCountGreaterThanOrderBySearchCountDesc()
         return topSearch.take(10).toMovieSearchResultList()
     }
+
+    // 영화 검색 (페이징 적용)
+    fun searchMovies(name: String, status: String?, pageable: Pageable) =
+        movieRepository.searchMoviesByName(
+            name = name,
+            status = when (status) {
+                "개봉" -> MovieStatus.RELEASED
+                "개봉예정" -> MovieStatus.TO_BE_RELEASED
+                null -> MovieStatus.NORMAL
+                else -> throw Exception("") // TODO
+            },
+            pageable = pageable
+        ).map { MovieResponse.from(it, getAllReviews(it.id!!)) }
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =

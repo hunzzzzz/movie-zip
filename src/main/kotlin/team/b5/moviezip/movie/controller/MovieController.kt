@@ -1,7 +1,7 @@
 package team.b5.moviezip.movie.controller
 
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -21,12 +21,6 @@ import team.b5.moviezip.movie.service.MovieService
 class MovieController(
     private val movieService: MovieService
 ) {
-    // 영화 전체 조회
-    // TODO: 검색 조건 미설정
-    @GetMapping
-    fun getAllMovies(@RequestParam(defaultValue = "0") page: Int) =
-        ResponseEntity.ok().body(movieService.getAllMovies(page))
-
     // 영화 단건 조회
     @GetMapping("/{movieId}")
     fun getMovies(@PathVariable movieId: Long): ResponseEntity<MovieResponse> {
@@ -50,16 +44,16 @@ class MovieController(
     /*
         검색 기능 V1 (QueryDSL 사용)
      */
-    @GetMapping("/api/v1/search")
-    fun searchMovies(
-        @RequestParam(required = false) name: String?,
-        @RequestParam(required = false) nation: String?,
-        @RequestParam(required = false) distributor: String?,
-        pageable: Pageable
-    ): ResponseEntity<Page<Movie>> {
-        val moviesPage: Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
-        return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
-    }
+//    @GetMapping("/api/v1/search")
+//    fun searchMovies(
+//        @RequestParam(required = false) name: String?,
+//        @RequestParam(required = false) nation: String?,
+//        @RequestParam(required = false) distributor: String?,
+//        pageable: Pageable
+//    ): ResponseEntity<Page<Movie>> {
+//        val moviesPage: Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
+//        return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
+//    }
 
     @GetMapping("/api/v1/top-audience")
     fun getTopAudiences(): ResponseEntity<List<Movie>> {
@@ -72,6 +66,15 @@ class MovieController(
         val topSearch: List<MovieSearchResult> = movieService.getTopSearch()
         return ResponseEntity.status(HttpStatus.OK).body(topSearch)
     }
+
+    // 영화 검색
+    @GetMapping("/api/v1/search")
+    fun searchMovies(
+        @RequestParam name: String,
+        @RequestParam(required = false) status: String?,
+        @PageableDefault(page = 0, size = 10, sort = ["audience"]) pageable: Pageable
+    ) =
+        ResponseEntity.ok().body(movieService.searchMovies(name, status, pageable))
 
     /*
         검색 기능 V2 (Redis 사용)
