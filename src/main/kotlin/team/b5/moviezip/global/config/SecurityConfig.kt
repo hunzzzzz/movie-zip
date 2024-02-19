@@ -27,7 +27,8 @@ class SecurityConfig {
                     "/v3/api-docs/**",
                     "/signup",
                     "/login",
-                    "/members/find-email"
+                    "/members/find-email",
+                    "/**" // TODO : 추후 삭제
                 ).permitAll()
                     .anyRequest().authenticated()
             }
