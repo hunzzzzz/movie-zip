@@ -83,4 +83,26 @@ class GlobalExceptionHandler(
                 }
             )
         )
+
+    // 잘못된 요청
+    @ExceptionHandler(IllegalArgumentException::class)
+    fun handleIllegalArgumentException(e: IllegalArgumentException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    // 작성자 불일치
+    @ExceptionHandler(MemberNotMatchedException::class)
+    fun handleMemberNotMatchedException(e: MemberNotMatchedException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
 }

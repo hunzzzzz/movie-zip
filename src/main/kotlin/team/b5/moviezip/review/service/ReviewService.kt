@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.b5.moviezip.global.exception.case.MemberNotMatchedException
+import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.member.repository.MemberRepository
 import team.b5.moviezip.movie.repository.MovieRepository
@@ -79,7 +81,7 @@ class ReviewService(
         val review = getReviewInfo(reviewId)
 
         if (review.member != member) {
-            throw IllegalArgumentException("작성자만 수정이 가능해요.")
+            throw MemberNotMatchedException("작성자만 수정이 가능해요.")
         } else {
             review.content = request.content
             review.rating = request.rating
@@ -97,7 +99,7 @@ class ReviewService(
         val review = getReviewInfo(reviewId)
 
         if (review.member != member) {
-            throw IllegalArgumentException("작성자만 삭제가 가능해요.")
+            throw MemberNotMatchedException("작성자만 삭제가 가능해요.")
         } else {
             review.status = ReviewStatus.WAIT_FOR_DELETE
             reviewRepository.save(review)
@@ -107,15 +109,15 @@ class ReviewService(
 
     // 멤버 정보
     private fun getMemberInfo(memberId: Long) =
-        memberRepository.findByIdOrNull(memberId) ?: throw IllegalArgumentException("계정 정보가 존재하지 않아요.")
+        memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("Member")
 
     // 영화 정보
     private fun getMovieInfo(movieId: Long) =
-        movieRepository.findByIdOrNull(movieId) ?: throw IllegalArgumentException("영화 정보가 존재하지 않아요.")
+        movieRepository.findByIdOrNull(movieId) ?: throw ModelNotFoundException("Movie")
 
     // 리뷰 정보
     private fun getReviewInfo(reviewId: Long) =
-        reviewRepository.findByIdOrNull(reviewId) ?: throw IllegalArgumentException("리뷰 정보가 존재하지 않아요.")
+        reviewRepository.findByIdOrNull(reviewId) ?: throw ModelNotFoundException("Review")
 
     // 리뷰 목록 조회시 정렬 기준
     private fun getSort(sort: String, order: String) =
@@ -126,15 +128,15 @@ class ReviewService(
         }
 
     // 평균 별점 (소수 둘째 자리 반올림)
-    private fun averageStar(movieId: Long): Double {
+    fun averageStar(movieId: Long): String {
         val reviews = reviewRepository.findAllByMovieIdAndStatus(movieId, ReviewStatus.NORMAL)
         var star: Int = 0
-        if (reviews.isEmpty()) throw IllegalStateException("등록된 별점이 없어요.")
+        if (reviews.isEmpty()) return "등록된 별점이 없어요."
         for (review in reviews) {
             star += review.rating * 10
         }
         star /= reviews.size
-        return star.toDouble() / 10
+        return "${star.toDouble() / 10}"
 //        return String.format("%.1f",star/reviews.size)
     }
 
