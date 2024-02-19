@@ -50,6 +50,7 @@ class ReviewService(
     }
 
     // 리뷰 생성
+
     @Transactional
     fun createReview(
         movieId: Long,
@@ -58,16 +59,23 @@ class ReviewService(
     ) {
         val member = getMemberInfo(memberPrincipal.id)
         val movie = getMovieInfo(movieId)
+        val existingReviews = reviewRepository.findReviewsByMovieAndMember(movie, member)
+        if (existingReviews.isNotEmpty()) {
+            throw IllegalStateException("이미 리뷰를 작성하셨습니다.")
+        }
 
-        reviewRepository.save(
-            Review(
-                content = request.content,
-                rating = request.rating,
-                status = ReviewStatus.NORMAL,
-                movie = movie,
-                member = member
-            )
+        val newReview = Review(
+            content = request.content,
+            rating = request.rating,
+            status = ReviewStatus.NORMAL,
+            movie = movie,
+            member = member
         )
+
+        reviewRepository.save(newReview)
+
+        updateMovieRatings(movieId)
+
     }
 
     //리뷰 수정
@@ -86,6 +94,8 @@ class ReviewService(
             review.content = request.content
             review.rating = request.rating
             reviewRepository.save(review)
+
+            updateMovieRatings(review.movie.id!!)
         }
     }
 
@@ -103,6 +113,8 @@ class ReviewService(
         } else {
             review.status = ReviewStatus.WAIT_FOR_DELETE
             reviewRepository.save(review)
+
+            updateMovieRatings(review.movie.id!!)
         }
     }
 
@@ -138,6 +150,11 @@ class ReviewService(
         star /= reviews.size
         return "${star.toDouble() / 10}"
 //        return String.format("%.1f",star/reviews.size)
+    }
+    private fun updateMovieRatings(movieId: Long) {
+        val movie = getMovieInfo(movieId)
+        movie.ratings = averageStar(movieId)
+        movieRepository.save(movie)
     }
 
 }

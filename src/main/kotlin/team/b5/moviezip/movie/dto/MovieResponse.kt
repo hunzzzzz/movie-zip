@@ -1,6 +1,7 @@
 package team.b5.moviezip.movie.dto
 
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.model.MovieNation
 import java.time.ZonedDateTime
 
 data class MovieResponse(
@@ -9,13 +10,13 @@ data class MovieResponse(
     val description: String?,
 //    var moviePicUrl: MutableList<String>,
     val releaseAt: ZonedDateTime?,
-    val audience: String,
-    val ratings: String?,
+    val audience: Long?,
+    val ratings: Double?,
     val director: String?,
     val distributor: String?,
-    val sales:String,
-    val screen:String?,
-    val nation:String?,
+    val sales:String?,
+    val screen:Int?,
+    val nation:MovieNation?,
     val like: Int,
     val dislike: Int,
 ) {

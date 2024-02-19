@@ -12,11 +12,11 @@ import team.b5.moviezip.global.exception.case.DuplicatedLikeException
 import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.member.repository.MemberRepository
-import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.dto.MovieResponse
 import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.toMovieSearchResultList
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.repository.MovieSpecifications
 import kotlin.math.min
 
@@ -51,9 +51,9 @@ class MovieService(
             movies = movieRepository.findAll(pageable)
         } else {
             movies = movieRepository.findAll(specification, pageable)
+            increaseSearchCount(movies.content)
         }
 
-        increaseSearchCount(movies.content)
         return movies
     }
 

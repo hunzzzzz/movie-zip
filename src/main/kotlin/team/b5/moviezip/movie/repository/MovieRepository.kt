@@ -9,8 +9,8 @@ import team.b5.moviezip.movie.model.Movie
 @Repository
 interface MovieRepository : JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
 
-    @Query("SELECT m FROM Movie m ORDER BY CAST(REPLACE(m.audience, ',', '') AS long) DESC")
-    fun findTop20MoviesByAudience(): List<Movie>
+    @Query("SELECT m FROM Movie m ORDER BY m.audience DESC")
+     fun findTop20MoviesByAudience(): List<Movie>
 
     @Query("SELECT m FROM Movie m WHERE m.searchCount > 0 ORDER BY m.searchCount DESC")
     fun findTop10BySearchCountGreaterThanOrderBySearchCountDesc(): List<Movie>

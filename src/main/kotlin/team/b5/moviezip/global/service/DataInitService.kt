@@ -70,16 +70,19 @@ class DataInitService(
                 ZoneId.of("Asia/Seoul")
             ),
             sales = data[2].replace(",", ""), // TODO
-            audience = data[3].replace(",", ""), // TODO
-            screens = data[4].replace(",", ""), // TODO
-            ratings = "0.0", // TODO
-            nation = data[5],
+            audience = 0, // TODO
+            screens = 0, // TODO
+            ratings = 0.0, // TODO
+            nation = MovieNation.기타,
             distributor = data[6],
             genre = getGenreFromCsvData(data[8]),
             director = data[9],
             status = MovieStatus.NORMAL,
             like = mutableSetOf(),
-            dislike = mutableSetOf()
+            dislike = mutableSetOf(),
+            actor = data[10],
+            ageLimit = data[11],
+
         ).let {
             println(it.name)
             it
