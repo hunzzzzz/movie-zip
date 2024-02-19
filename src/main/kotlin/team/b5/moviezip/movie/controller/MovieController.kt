@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import team.b5.moviezip.global.security.MemberPrincipal
-import team.b5.moviezip.movie.dto.MovieResponse
 import team.b5.moviezip.movie.dto.MovieSearchResult
+import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.service.MovieService
 

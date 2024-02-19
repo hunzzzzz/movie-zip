@@ -1,8 +1,6 @@
 package team.b5.moviezip.movie.service
 
-
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -12,36 +10,32 @@ import team.b5.moviezip.global.exception.case.DuplicatedLikeException
 import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.member.repository.MemberRepository
-import team.b5.moviezip.movie.dto.MovieResponse
 import team.b5.moviezip.movie.dto.MovieSearchResult
+import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.dto.toMovieSearchResultList
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.repository.MovieSpecifications
-import kotlin.math.min
+import team.b5.moviezip.review.dto.ReviewResponse
+import team.b5.moviezip.review.model.ReviewStatus
+import team.b5.moviezip.review.repository.ReviewRepository
 
 @Service
 @Transactional
 class MovieService(
     private val movieRepository: MovieRepository,
+    private val reviewRepository: ReviewRepository,
     private val memberRepository: MemberRepository
 ) {
     // 영화 전체 조회
     fun getAllMovies(page: Int) =
         PageRequest.of(page, 10).let {
-            movieRepository.findAll(it).map { movie -> MovieResponse.from(movie) }
+            movieRepository.findAll(it).map { movie -> MovieResponse.from(movie, getAllReviews(movie.id!!)) }
         }
 
-//    Page<Movie>
-//    {
-//        val pageable = PageRequest.of(page, 10)
-//        val start = pageable.offset.toInt()
-//        val end = min(start + pageable.pageSize, filteredList.size)
-//        return PageImpl()
-//    }
-
     // 영화 단건 조회
-    fun getMovies(movieId: Long) = MovieResponse.from(getMovie(movieId))
+    fun getMovies(movieId: Long) =
+        MovieResponse.from(getMovie(movieId), getAllReviews(movieId))
 
     fun searchMovies(name: String?, nation: String?, distributor: String?, pageable: Pageable): Page<Movie> {
         val specification = MovieSpecifications.searchMovies(name, nation, distributor)
@@ -100,6 +94,10 @@ class MovieService(
         }
     }
 
+    // Movie 하위의 모든 Review 목록을 출력
+    private fun getAllReviews(movieId: Long) =
+        reviewRepository.findAllByMovieIdAndStatus(movieId, ReviewStatus.NORMAL).map { ReviewResponse.from(it) }
+
     // 멤버 조회
     private fun getMember(memberId: Long) =
         memberRepository.findByIdOrNull(memberId) ?: throw ModelNotFoundException("회원")
@@ -107,8 +105,4 @@ class MovieService(
     // 영화 조회 (id)
     private fun getMovie(movieId: Long) =
         movieRepository.findByIdOrNull(movieId) ?: throw ModelNotFoundException("영화")
-
-    // 영화 조회 (name)
-    private fun getMovie(name: String) =
-        movieRepository.findByName(name) ?: throw ModelNotFoundException("영화")
 }

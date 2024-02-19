@@ -40,7 +40,6 @@ class ReviewService(
         return reviewPage
             .map {
                 ReviewResponse(
-                    id = it.id!!,
                     name = it.member.name,
                     ratings = it.rating,
                     content = it.content,
@@ -140,21 +139,20 @@ class ReviewService(
         }
 
     // 평균 별점 (소수 둘째 자리 반올림)
-    fun averageStar(movieId: Long): String {
+    fun averageStar(movieId: Long): Double {
         val reviews = reviewRepository.findAllByMovieIdAndStatus(movieId, ReviewStatus.NORMAL)
         var star: Int = 0
-        if (reviews.isEmpty()) return "등록된 별점이 없어요."
+        if (reviews.isEmpty()) return 0.0
         for (review in reviews) {
             star += review.rating * 10
         }
         star /= reviews.size
-        return "${star.toDouble() / 10}"
-//        return String.format("%.1f",star/reviews.size)
+        return star.toDouble() / 10
     }
+
     private fun updateMovieRatings(movieId: Long) {
         val movie = getMovieInfo(movieId)
         movie.ratings = averageStar(movieId)
         movieRepository.save(movie)
     }
-
 }
