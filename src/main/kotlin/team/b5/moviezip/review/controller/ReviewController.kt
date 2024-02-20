@@ -1,5 +1,6 @@
 package team.b5.moviezip.review.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
@@ -18,6 +19,7 @@ class ReviewController(
 ) {
 
     // 리뷰 목록 조회
+    @Operation(summary = "리뷰 목록 조회")
     @GetMapping
     fun getReviews(
         @PathVariable movieId: Long,
@@ -33,6 +35,7 @@ class ReviewController(
     }
 
     // 리뷰 작성
+    @Operation(summary = "리뷰 작성")
     @PostMapping
     fun createReview(
         @PathVariable movieId: Long,
@@ -46,6 +49,7 @@ class ReviewController(
     }
 
     // 리뷰 수정
+    @Operation(summary = "리뷰 수정")
     @PatchMapping("/{reviewId}")
     fun updateReview(
 //        @PathVariable movieId: Long,
@@ -60,6 +64,7 @@ class ReviewController(
     }
 
     // 리뷰 삭제
+    @Operation(summary = "리뷰 제거")
     @DeleteMapping("/{reviewId}")
     fun deleteReview(
 //        @PathVariable movieId: Long,

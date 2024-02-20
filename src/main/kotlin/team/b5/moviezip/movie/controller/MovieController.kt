@@ -1,5 +1,6 @@
 package team.b5.moviezip.movie.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
@@ -24,12 +25,14 @@ class MovieController(
     private val movieService: MovieService
 ) {
     // 영화 단건 조회
+    @Operation(summary = "영화 단건 조회")
     @GetMapping("/{movieId}")
     fun getMovies(@PathVariable movieId: Long): ResponseEntity<MovieResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(movieService.getMovies(movieId))
     }
 
     // 좋아요
+    @Operation(summary = "영화 좋아요")
     @GetMapping("/{movieId}/like")
     fun like(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
@@ -37,6 +40,7 @@ class MovieController(
     ) = ResponseEntity.ok().body(movieService.like(memberPrincipal, movieId))
 
     // 싫어요
+    @Operation(summary = "영화 싫어요")
     @GetMapping("/{movieId}/dislike")
     fun dislike(
         @AuthenticationPrincipal memberPrincipal: MemberPrincipal,
@@ -46,12 +50,14 @@ class MovieController(
     /*
         검색 기능 V1 (QueryDSL 사용)
      */
+    @Operation(summary = "관객순위 영화 목록 조회")
     @GetMapping("/api/v1/top-audience")
     fun getTopAudiences(): ResponseEntity<List<Movie>> {
         val topAudiences = movieService.getTopAudience()
         return ResponseEntity.status(HttpStatus.OK).body(topAudiences)
     }
 
+    @Operation(summary = "검색순위 영화 목록 조회")
     @GetMapping("/api/v1/top-search")
     fun getTopSearch(): ResponseEntity<List<MovieSearchResult>> {
         val topSearch: List<MovieSearchResult> = movieService.getTopSearch()
@@ -59,6 +65,7 @@ class MovieController(
     }
 
     // 단순 영화 검색
+    @Operation(summary = "QueryDSL 영화 검색", description = "입력한 글자가 포함된 영화 검색")
     @GetMapping("/api/v1/search")
     fun searchMovies(
         @RequestParam thing: String,
