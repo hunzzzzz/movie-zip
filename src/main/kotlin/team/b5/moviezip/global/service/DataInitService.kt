@@ -1,6 +1,7 @@
 package team.b5.moviezip.global.service
 
 import com.opencsv.CSVReader
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.genre.model.Genre
@@ -68,6 +69,7 @@ class DataInitService(
                 ).atStartOfDay(),
                 ZoneId.of("Asia/Seoul")
             ),
+            status = getMovieStatus(data[1]),
             sales = data[2].replace(",", "").toLong(),
             audience = data[3].replace(",", "").toLong(),
             screens = data[4].replace(",", "").toInt(),
@@ -79,8 +81,7 @@ class DataInitService(
             actor = data[10], // TODO
 
             description = "",
-            ratings = 0.0, // TODO
-            status = MovieStatus.NORMAL,
+            ratings = 0.0,
             like = mutableSetOf(),
             dislike = mutableSetOf(),
         )
@@ -112,4 +113,24 @@ class DataInitService(
 
     // 장르 조회
     private fun getGenreByKorName(korName: String) = genreRepository.findByKorName(korName)
+
+    // 상태 조회
+    private fun getMovieStatus(releaseAt: String) =
+        ZonedDateTime.of(
+            LocalDate.parse(
+                releaseAt, DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            ).atStartOfDay(),
+            ZoneId.of("Asia/Seoul")
+        ).let {
+            if (ZonedDateTime.now() > it) MovieStatus.TO_BE_RELEASED
+            else if (ZonedDateTime.now() > it.plusDays(45)) MovieStatus.RELEASED
+            else MovieStatus.NORMAL
+        }
+
+    // 개봉 철회 여부를 하루에 한 번씩 확인 (개봉일 기준 45일이 지난 영화의 status를 NORMAL로 변경)
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+    fun checkMovieStatus() =
+        movieRepository.findAll()
+            .filter { it.status == MovieStatus.RELEASED && it.releaseAt.plusDays(45) < ZonedDateTime.now() }
+            .map { it.updateStatus(MovieStatus.NORMAL) }
 }
