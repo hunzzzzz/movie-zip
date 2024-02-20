@@ -1,6 +1,7 @@
 package team.b5.moviezip.global.exception
 
 import jakarta.servlet.http.HttpServletRequest
+import org.hibernate.query.sqm.UnknownPathException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
@@ -77,7 +78,7 @@ class GlobalExceptionHandler(
     fun handleIllegalStateException(e: IllegalStateException, request: WebRequest): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             httpStatus = "400 Bad Request",
-            message = e.message .toString(),
+            message = e.message.toString(),
             path = httpServletRequest.requestURI
         )
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
@@ -116,6 +117,17 @@ class GlobalExceptionHandler(
             ErrorResponse(
                 httpStatus = "400 Bad Request",
                 message = e.message.toString(),
+                path = httpServletRequest.requestURI
+            )
+        )
+
+    // 잘못된 검색 조건 설정
+    @ExceptionHandler(UnknownPathException::class)
+    fun handleUnknownPathException(e: UnknownPathException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ErrorResponse(
+                httpStatus = "400 Bad Request",
+                message = "잘못된 검색 조건입니다",
                 path = httpServletRequest.requestURI
             )
         )

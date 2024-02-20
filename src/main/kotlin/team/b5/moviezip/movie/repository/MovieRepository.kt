@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import team.b5.moviezip.movie.model.Movie
 
 @Repository
-interface MovieRepository : JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
+interface MovieRepository : JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie>, CustomMovieRepository {
 
     @Query("SELECT m FROM Movie m ORDER BY m.audience DESC")
      fun findTop20MoviesByAudience(): List<Movie>
