@@ -39,6 +39,8 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     // FILE
     implementation("com.opencsv:opencsv:5.9")
+    // REDIS
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:3.2.2")
     // SECURITY
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
