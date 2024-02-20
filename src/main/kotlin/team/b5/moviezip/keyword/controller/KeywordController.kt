@@ -1,5 +1,6 @@
 package team.b5.moviezip.keyword.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,6 +12,7 @@ class KeywordController(
     private val keywordService: KeywordService,
 ) {
 
+    @Operation(summary = "인기검색어 목록 조회")
     @GetMapping
     fun getHotKeywords(
     ):ResponseEntity<String>{
