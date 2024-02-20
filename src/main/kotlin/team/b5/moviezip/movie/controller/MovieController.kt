@@ -46,17 +46,6 @@ class MovieController(
     /*
         검색 기능 V1 (QueryDSL 사용)
      */
-//    @GetMapping("/api/v1/search")
-//    fun searchMovies(
-//        @RequestParam(required = false) name: String?,
-//        @RequestParam(required = false) nation: String?,
-//        @RequestParam(required = false) distributor: String?,
-//        pageable: Pageable
-//    ): ResponseEntity<Page<Movie>> {
-//        val moviesPage: Page<Movie> = movieService.searchMovies(name, nation, distributor, pageable)
-//        return ResponseEntity.status(HttpStatus.OK).body(moviesPage)
-//    }
-
     @GetMapping("/api/v1/top-audience")
     fun getTopAudiences(): ResponseEntity<List<Movie>> {
         val topAudiences = movieService.getTopAudience()
@@ -69,7 +58,7 @@ class MovieController(
         return ResponseEntity.status(HttpStatus.OK).body(topSearch)
     }
 
-    // 영화 검색
+    // 단순 영화 검색
     @GetMapping("/api/v1/search")
     fun searchMovies(
         @RequestParam thing: String,

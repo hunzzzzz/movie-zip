@@ -1,7 +1,6 @@
 package team.b5.moviezip.movie.service
 
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -18,7 +17,6 @@ import team.b5.moviezip.movie.model.MovieNation
 import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.repository.MovieRepository
 import team.b5.moviezip.movie.repository.MovieSpecifications
-import team.b5.moviezip.movie.repository.MovieRepositoryImpl
 import team.b5.moviezip.review.dto.ReviewResponse
 import team.b5.moviezip.review.model.ReviewStatus
 import team.b5.moviezip.review.repository.ReviewRepository
@@ -28,8 +26,7 @@ import team.b5.moviezip.review.repository.ReviewRepository
 class MovieService(
     private val movieRepository: MovieRepository,
     private val reviewRepository: ReviewRepository,
-    private val memberRepository: MemberRepository,
-    private val movieRepositoryImpl: MovieRepositoryImpl
+    private val memberRepository: MemberRepository
 ) {
     // 영화 단건 조회
     fun getMovies(movieId: Long) =
@@ -67,9 +64,13 @@ class MovieService(
     }
 
     // 영화 검색 (페이징 적용)
-    fun searchMovies(thing: String, status: MovieStatus?, nation: MovieNation?, pageable: Pageable) =
-        movieRepository.searchMovies(thing, status, nation, pageable)
-            .map { MovieResponse.from(it, getAllReviews(it.id!!)) }
+    fun searchMovies(
+        thing: String,
+        status: MovieStatus?,
+        nation: MovieNation?,
+        pageable: Pageable
+    ) = movieRepository.searchMovies(thing, status, nation, pageable)
+        .map { MovieResponse.from(it, getAllReviews(it.id!!)) }
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =
