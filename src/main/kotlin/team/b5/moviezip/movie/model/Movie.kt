@@ -53,7 +53,7 @@ class Movie(
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    val status: MovieStatus,
+    var status: MovieStatus,
 
     @ManyToMany
     val like: MutableSet<Member>,
@@ -72,5 +72,9 @@ class Movie(
 
     fun dislike(member: Member) {
         this.dislike.add(member)
+    }
+
+    fun updateStatus(status: MovieStatus) {
+        this.status = status
     }
 }
