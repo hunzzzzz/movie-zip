@@ -14,6 +14,8 @@ import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.model.MovieNation
+import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.service.MovieService
 
 @RestController
@@ -70,11 +72,12 @@ class MovieController(
     // 영화 검색
     @GetMapping("/api/v1/search")
     fun searchMovies(
-        @RequestParam name: String,
-        @RequestParam(required = false) status: String?,
+        @RequestParam thing: String,
+        @RequestParam(required = false) status: MovieStatus?,
+        @RequestParam(required = false) nation: MovieNation?,
         @PageableDefault(page = 0, size = 10, sort = ["audience"]) pageable: Pageable
     ) =
-        ResponseEntity.ok().body(movieService.searchMovies(name, status, pageable))
+        ResponseEntity.ok().body(movieService.searchMovies(thing, status, nation, pageable))
 
     /*
         검색 기능 V2 (Redis 사용)
