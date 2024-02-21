@@ -19,7 +19,7 @@ data class MovieResponse(
     val like: Int,
     val dislike: Int,
     val genre: String
-):Serializable {
+) : Serializable {
     companion object {
         fun from(movie: Movie, reviews: List<ReviewResponse>) = MovieResponse(
             name = movie.name,
@@ -34,7 +34,7 @@ data class MovieResponse(
             reviews = reviews,
             like = movie.like.size,
             dislike = movie.dislike.size,
-            genre = movie.genre.joinToString(", ")
+            genre = movie.genre.replace(",", ", ")
         )
     }
 }
