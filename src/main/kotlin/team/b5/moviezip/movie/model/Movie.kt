@@ -30,7 +30,7 @@ class Movie(
     val distributor: String,
 
     @Column(name = "age_limit")
-    val ageLimit: String?,
+    val ageLimit: MovieAgeLimit,
 
     @Column(name = "genre")
     val genre: String,
