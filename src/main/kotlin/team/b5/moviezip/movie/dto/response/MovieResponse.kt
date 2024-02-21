@@ -2,6 +2,7 @@ package team.b5.moviezip.movie.dto.response
 
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.review.dto.ReviewResponse
+import java.io.Serializable
 import java.time.ZonedDateTime
 
 data class MovieResponse(
@@ -18,7 +19,7 @@ data class MovieResponse(
     val like: Int,
     val dislike: Int,
     val genre: String
-) {
+):Serializable {
     companion object {
         fun from(movie: Movie, reviews: List<ReviewResponse>) = MovieResponse(
             name = movie.name,
