@@ -30,7 +30,7 @@ class DataInitService(
     // 영화 추가 (더미 데이터)
     fun addMovies(request: AddMovieRequest) =
         request.let {
-            if (!invalidateData(request.toArray(), null))
+            if (!isInvalidData(request.toArray(), null))
                 movieRepository.save(dataToEntity(request.toArray()))
         }
 
@@ -46,7 +46,7 @@ class DataInitService(
         do {
             val data = csvReader.readNext()
             if (data != null)
-                if (invalidateData(data, movies)) continue
+                if (isInvalidData(data, movies)) continue
                 else movies.add(dataToEntity(data))
         } while (data != null)
 
@@ -74,19 +74,18 @@ class DataInitService(
             ageLimit = data[7], // TODO
             genre = data[8],
             director = data[9],
-            actor = data[10], // TODO
+            actor = data[10],
 
-            description = "",
+            description = "", // TODO
             ratings = 0.0,
             like = mutableSetOf(),
             dislike = mutableSetOf(),
         )
 
     // 데이터 검증
-    private fun invalidateData(data: Array<String>, movies: ArrayList<Movie>?) =
-        movies?.any { it.name == data[0] && it.releaseAt == convertStringDateFromZonedDateTime(data[1]) } ?: false
-                || data[0].isEmpty()
-                || data[1].isEmpty()
+    private fun isInvalidData(data: Array<String>, movies: ArrayList<Movie>?) =
+        data[0].isEmpty() || data[1].isEmpty()
+                || movies?.any { it.name == data[0] && it.releaseAt == convertStringDateFromZonedDateTime(data[1]) } ?: false
                 || data[2].isEmpty() || data[2].replace(",", "").toLongOrNull() == null
                 || data[3].isEmpty() || data[3].replace(",", "").toLongOrNull() == null
                 || data[4].isEmpty() || data[4].replace(",", "").toIntOrNull() == null
@@ -107,8 +106,8 @@ class DataInitService(
     private fun getMovieStatus(releaseAt: String) =
         convertStringDateFromZonedDateTime(releaseAt)
             .let {
-                if (ZonedDateTime.now() > it) MovieStatus.TO_BE_RELEASED
-                else if (ZonedDateTime.now() > it.plusDays(45)) MovieStatus.RELEASED
+                if (ZonedDateTime.now() < it) MovieStatus.TO_BE_RELEASED
+                else if (ZonedDateTime.now() < it.plusDays(45)) MovieStatus.RELEASED
                 else MovieStatus.NORMAL
             }
 
