@@ -2,7 +2,6 @@ package team.b5.moviezip.movie.service
 
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -73,8 +72,15 @@ class MovieService(
         status: MovieStatus?,
         nation: MovieNation?,
         pageable: Pageable
-    ) = movieRepository.searchMovies(thing, status, nation, pageable)
-        .map { MovieResponse.from(it, getAllReviews(it.id!!)) }
+    ) =
+        keywordService.countKeywords(thing).run {
+            movieRepository.searchMovies(thing, status, nation, pageable)
+                .map {
+                    keywordService.countKeywords(it.name)
+                    it.updateSearchCount()
+                    MovieResponse.from(it, getAllReviews(it.id!!))
+                }
+        }
 
     // 영화 검색 (페이징 적용+ 레디스 캐싱)
     @Cacheable(value = ["movies"], cacheManager = "redisCacheManager")
@@ -83,12 +89,15 @@ class MovieService(
         status: MovieStatus?,
         nation: MovieNation?,
         pageable: Pageable
-    ):Page<MovieResponse>{
-        keywordService.countKeywords(thing)
-
-        return movieRepository.searchMovies(thing, status, nation, pageable)
-            .map { MovieResponse.from(it, getAllReviews(it.id!!)) }
-    }
+    ): Page<MovieResponse> =
+        keywordService.countKeywords(thing).run {
+            movieRepository.searchMovies(thing, status, nation, pageable)
+                .map {
+                    keywordService.countKeywords(it.name)
+                    it.updateSearchCount()
+                    MovieResponse.from(it, getAllReviews(it.id!!))
+                }
+        }
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =

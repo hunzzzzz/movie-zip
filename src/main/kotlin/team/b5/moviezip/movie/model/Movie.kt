@@ -48,7 +48,7 @@ class Movie(
     var ratings: Double = 0.0,
 
     @Column(name = "search_count")
-    var searchCount: Long? = 0,
+    var searchCount: Long = 0,
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -75,5 +75,9 @@ class Movie(
 
     fun updateStatus(status: MovieStatus) {
         this.status = status
+    }
+
+    fun updateSearchCount() {
+        this.searchCount++
     }
 }
