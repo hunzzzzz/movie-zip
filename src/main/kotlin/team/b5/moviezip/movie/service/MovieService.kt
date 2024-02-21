@@ -15,6 +15,7 @@ import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.dto.toMovieSearchResultList
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.model.MovieAgeLimit
 import team.b5.moviezip.movie.model.MovieNation
 import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.repository.MovieRepository
@@ -71,10 +72,11 @@ class MovieService(
         thing: String,
         status: MovieStatus?,
         nation: MovieNation?,
+        ageLimit: MovieAgeLimit?,
         pageable: Pageable
     ) =
         keywordService.countKeywords(thing).run {
-            movieRepository.searchMovies(thing, status, nation, pageable)
+            movieRepository.searchMovies(thing, status, nation, ageLimit, pageable)
                 .map {
                     keywordService.countKeywords(it.name)
                     it.updateSearchCount()
@@ -88,10 +90,11 @@ class MovieService(
         thing: String,
         status: MovieStatus?,
         nation: MovieNation?,
+        ageLimit: MovieAgeLimit?,
         pageable: Pageable
     ): Page<MovieResponse> =
         keywordService.countKeywords(thing).run {
-            movieRepository.searchMovies(thing, status, nation, pageable)
+            movieRepository.searchMovies(thing, status, nation, ageLimit, pageable)
                 .map {
                     keywordService.countKeywords(it.name)
                     it.updateSearchCount()

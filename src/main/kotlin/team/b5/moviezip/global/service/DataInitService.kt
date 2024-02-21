@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.global.variables.MovieVariables
 import team.b5.moviezip.movie.dto.request.AddMovieRequest
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.model.MovieAgeLimit
 import team.b5.moviezip.movie.model.MovieNation
 import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.repository.MovieRepository
@@ -71,7 +72,7 @@ class DataInitService(
             screens = data[4].replace(",", "").toInt(),
             nation = MovieNation.valueOf(MovieVariables.movieNationMap[data[5]]!!),
             distributor = data[6],
-            ageLimit = data[7], // TODO
+            ageLimit = getMovieAgeLimit(data[7]),
             genre = data[8],
             director = data[9],
             actor = data[10],
@@ -85,19 +86,21 @@ class DataInitService(
     // 데이터 검증
     private fun isInvalidData(data: Array<String>, movies: ArrayList<Movie>?) =
         data[0].isEmpty() || data[1].isEmpty()
-                || movies?.any { it.name == data[0] && it.releaseAt == convertStringDateFromZonedDateTime(data[1]) } ?: false
+                || movies?.any { it.name == data[0] && it.releaseAt == convertStringDateFromZonedDateTime(data[1]) } ?: false // 중복 검증
                 || data[2].isEmpty() || data[2].replace(",", "").toLongOrNull() == null
                 || data[3].isEmpty() || data[3].replace(",", "").toLongOrNull() == null
                 || data[4].isEmpty() || data[4].replace(",", "").toIntOrNull() == null
                 || data[5].isEmpty() || !MovieVariables.movieNationMap.containsKey(data[5])
                 || data[6].isEmpty()
+                || data[7].isEmpty()
                 || data[8].isEmpty()
 
     // 문자열 형식의 날짜 데이터를 ZonedDateTime 으로 변환
     private fun convertStringDateFromZonedDateTime(date: String) =
         ZonedDateTime.of(
             LocalDate.parse(
-                date, DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                date,
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")
             ).atStartOfDay(),
             ZoneId.of("Asia/Seoul")
         )
@@ -110,6 +113,14 @@ class DataInitService(
                 else if (ZonedDateTime.now() < it.plusDays(45)) MovieStatus.RELEASED
                 else MovieStatus.NORMAL
             }
+
+    // limit 조회
+    private fun getMovieAgeLimit(ageLimit: String): MovieAgeLimit {
+        return if (ageLimit.contains("12")) MovieAgeLimit.PG_12
+        else if (ageLimit.contains("15")) MovieAgeLimit.PG_15
+        else if (ageLimit.contains("18") || ageLimit.contains("관람불가")) MovieAgeLimit.RESTRICTED
+        else MovieAgeLimit.GENERAL
+    }
 
     // 개봉 철회 여부를 하루에 한 번씩 확인 (개봉일 기준 45일이 지난 영화의 status를 NORMAL로 변경)
     @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)

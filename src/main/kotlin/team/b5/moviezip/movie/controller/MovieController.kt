@@ -20,6 +20,7 @@ import team.b5.moviezip.global.security.MemberPrincipal
 import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.response.MovieResponse
 import team.b5.moviezip.movie.model.Movie
+import team.b5.moviezip.movie.model.MovieAgeLimit
 import team.b5.moviezip.movie.model.MovieNation
 import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.service.MovieService
@@ -78,6 +79,7 @@ class MovieController(
 
         @RequestParam(required = false) status: MovieStatus?,
         @RequestParam(required = false) nation: MovieNation?,
+        @RequestParam(required = false) ageLimit: MovieAgeLimit?,
 
         @Parameter(description = "페이지")
         @RequestParam(value = "page", defaultValue = "1") page: Int,
@@ -86,7 +88,7 @@ class MovieController(
         @RequestParam(value = "sort", defaultValue = "audience") sort: String
     ) =
         PageRequest.of(page - 1, 5, Sort.by(Sort.Order(Sort.Direction.DESC, sort)))
-            .let { ResponseEntity.ok().body(movieService.searchMovies(thing, status, nation, it)) }
+            .let { ResponseEntity.ok().body(movieService.searchMovies(thing, status, nation, ageLimit, it)) }
 
     /*
         검색 기능 V2 (Redis 사용)
@@ -100,6 +102,7 @@ class MovieController(
 
         @RequestParam(required = false) status: MovieStatus?,
         @RequestParam(required = false) nation: MovieNation?,
+        @RequestParam(required = false) ageLimit: MovieAgeLimit?,
 
         @Parameter(description = "페이지")
         @RequestParam(value = "page", defaultValue = "1") page: Int,
@@ -111,6 +114,6 @@ class MovieController(
             .of(page - 1, 5, Sort.by(Sort.Order(Sort.Direction.DESC, sort)))
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(movieService.searchMoviesByRedis(thing, status, nation, pageable))
+            .body(movieService.searchMoviesByRedis(thing, status, nation, ageLimit, pageable))
     }
 }

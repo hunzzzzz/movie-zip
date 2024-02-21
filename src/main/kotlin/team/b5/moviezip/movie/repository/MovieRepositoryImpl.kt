@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import team.b5.moviezip.global.querydsl.QueryDslSupport
+import team.b5.moviezip.movie.model.MovieAgeLimit
 import team.b5.moviezip.movie.model.MovieNation
 import team.b5.moviezip.movie.model.MovieStatus
 import team.b5.moviezip.movie.model.QMovie
@@ -22,12 +23,14 @@ class MovieRepositoryImpl : QueryDslSupport(), CustomMovieRepository {
         thing: String,
         status: MovieStatus?,
         nation: MovieNation?,
+        ageLimit: MovieAgeLimit?,
         pageable: Pageable
     ) =
         BooleanBuilder().let {
             it.and(movie.name.containsIgnoreCase(thing))
             status?.let { status -> it.and(movie.status.eq(status)) }
             nation?.let { nation -> it.and(movie.nation.eq(nation)) }
+            ageLimit?.let { ageLimit -> it.and(movie.ageLimit.eq(ageLimit)) }
 
             PageImpl(
                 getContents(it, pageable),
