@@ -34,7 +34,7 @@ class MovieService(
 ) {
     // 영화 단건 조회
     fun getMovies(movieId: Long) =
-        MovieResponse.from(getMovie(movieId), getAllReviews(movieId))
+        MovieResponse.from(getMovie(movieId))
 
     fun searchMovies(name: String?, nation: String?, distributor: String?, pageable: Pageable): Page<Movie> {
         val specification = MovieSpecifications.searchMovies(name, nation, distributor)
@@ -80,7 +80,7 @@ class MovieService(
                 .map {
                     keywordService.countKeywords(it.name)
                     it.updateSearchCount()
-                    MovieResponse.from(it, getAllReviews(it.id!!))
+                    MovieResponse.from(it)
                 }
         }
 
@@ -98,7 +98,7 @@ class MovieService(
                 .map {
                     keywordService.countKeywords(it.name)
                     it.updateSearchCount()
-                    MovieResponse.from(it, getAllReviews(it.id!!))
+                    MovieResponse.from(it)
                 }
         }
 

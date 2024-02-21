@@ -36,10 +36,10 @@ class Movie(
     val genre: String,
 
     @Column(name = "director", nullable = false)
-    val director: String?,
+    val director: String,
 
     @Column(name = "actor", columnDefinition = "VARCHAR (2048)")
-    val actor: String?,
+    val actor: String,
 
     @Column(name = "description", nullable = true)
     val description: String?,
