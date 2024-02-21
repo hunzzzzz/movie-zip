@@ -70,38 +70,45 @@ class MovieController(
     }
 
     // 단순 영화 검색
-    @Operation(summary = "QueryDSL 영화 검색", description = "입력한 글자가 포함된 영화 검색")
+    @Operation(summary = "QueryDSL 영화 검색 (v1)", description = "입력한 글자가 포함된 영화 검색")
     @GetMapping("/api/v1/search")
     fun searchMovies(
+        @Parameter(description = "영화 제목")
         @RequestParam thing: String,
+
         @RequestParam(required = false) status: MovieStatus?,
         @RequestParam(required = false) nation: MovieNation?,
-        @PageableDefault(page = 0, size = 10, sort = ["audience"]) pageable: Pageable
+
+        @Parameter(description = "페이지")
+        @RequestParam(value = "page", defaultValue = "1") page: Int,
+
+        @Parameter(description = "정렬 기준 (audience (관객 수), like (좋아요 수), ... etc)")
+        @RequestParam(value = "sort", defaultValue = "audience") sort: String
     ) =
-        ResponseEntity.ok().body(movieService.searchMovies(thing, status, nation, pageable))
+        PageRequest.of(page - 1, 5, Sort.by(Sort.Order(Sort.Direction.DESC, sort)))
+            .let { ResponseEntity.ok().body(movieService.searchMovies(thing, status, nation, it)) }
 
     /*
         검색 기능 V2 (Redis 사용)
      */
-    @Operation(summary = "QueryDSL 영화 검색 with REDIS", description = "입력한 글자가 포함된 영화 검색")
+    @Operation(summary = "QueryDSL 영화 검색 (v2, with REDIS)", description = "입력한 글자가 포함된 영화 검색")
     @GetMapping("/api/v2/search")
 //    @Cacheable(value = ["movies"], cacheManager = "redisCacheManager")
     fun searchMoviesByRedis(
-        @Parameter(description = "제목")
+        @Parameter(description = "영화 제목")
         @RequestParam thing: String,
+
         @RequestParam(required = false) status: MovieStatus?,
         @RequestParam(required = false) nation: MovieNation?,
+
         @Parameter(description = "페이지")
         @RequestParam(value = "page", defaultValue = "1") page: Int,
-        @Parameter(description = "페이지당 조회 자료 수")
-        @RequestParam(value = "size", defaultValue = "5") size: Int,
-        @Parameter(description = "정렬 기준 id, audience, name ... etc")
-        @RequestParam(value = "sort", defaultValue = "audience") sort: String,
-//        @Parameter(description = "오름/내림차순 asc/desc")
-//        @RequestParam(value = "order", defaultValue = "desc") order: String,
-    ):ResponseEntity<Page<MovieResponse>> {
-        val pageable: Pageable= PageRequest
-            .of(page-1, size, Sort.by(Sort.Order(Sort.Direction.DESC, sort)))
+
+        @Parameter(description = "정렬 기준 (audience (관객 수), like (좋아요 수), ... etc)")
+        @RequestParam(value = "sort", defaultValue = "audience") sort: String
+    ): ResponseEntity<Page<MovieResponse>> {
+        val pageable: Pageable = PageRequest
+            .of(page - 1, 5, Sort.by(Sort.Order(Sort.Direction.DESC, sort)))
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(movieService.searchMoviesByRedis(thing, status, nation, pageable))
