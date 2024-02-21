@@ -1,7 +1,12 @@
 package team.b5.moviezip.movie.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -78,4 +83,27 @@ class MovieController(
     /*
         검색 기능 V2 (Redis 사용)
      */
+    @Operation(summary = "QueryDSL 영화 검색 with REDIS", description = "입력한 글자가 포함된 영화 검색")
+    @GetMapping("/api/v2/search")
+//    @Cacheable(value = ["movies"], cacheManager = "redisCacheManager")
+    fun searchMoviesByRedis(
+        @Parameter(description = "제목")
+        @RequestParam thing: String,
+        @RequestParam(required = false) status: MovieStatus?,
+        @RequestParam(required = false) nation: MovieNation?,
+        @Parameter(description = "페이지")
+        @RequestParam(value = "page", defaultValue = "1") page: Int,
+        @Parameter(description = "페이지당 조회 자료 수")
+        @RequestParam(value = "size", defaultValue = "5") size: Int,
+        @Parameter(description = "정렬 기준 id, audience, name ... etc")
+        @RequestParam(value = "sort", defaultValue = "audience") sort: String,
+//        @Parameter(description = "오름/내림차순 asc/desc")
+//        @RequestParam(value = "order", defaultValue = "desc") order: String,
+    ):ResponseEntity<Page<MovieResponse>> {
+        val pageable: Pageable= PageRequest
+            .of(page-1, size, Sort.by(Sort.Order(Sort.Direction.DESC, sort)))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(movieService.searchMoviesByRedis(thing, status, nation, pageable))
+    }
 }
