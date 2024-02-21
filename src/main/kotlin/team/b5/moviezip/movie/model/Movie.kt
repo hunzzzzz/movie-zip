@@ -1,7 +1,6 @@
 package team.b5.moviezip.movie.model
 
 import jakarta.persistence.*
-import team.b5.moviezip.genre.model.Genre
 import team.b5.moviezip.member.model.Member
 import java.time.ZonedDateTime
 
@@ -33,8 +32,8 @@ class Movie(
     @Column(name = "age_limit")
     val ageLimit: String?,
 
-    @ManyToMany
-    val genre: MutableSet<Genre> = mutableSetOf(),
+    @Column(name = "genre")
+    val genre: String,
 
     @Column(name = "director", nullable = false)
     val director: String?,
@@ -56,10 +55,10 @@ class Movie(
     var status: MovieStatus,
 
     @ManyToMany
-    val like: MutableSet<Member>,
+    val like: MutableSet<Member> = mutableSetOf(),
 
     @ManyToMany
-    val dislike: MutableSet<Member>
+    val dislike: MutableSet<Member> = mutableSetOf()
 ) {
     @Id
     @Column(name = "movie_id")
