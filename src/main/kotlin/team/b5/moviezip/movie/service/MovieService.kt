@@ -1,6 +1,8 @@
 package team.b5.moviezip.movie.service
 
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.global.exception.case.DuplicatedLikeException
 import team.b5.moviezip.global.exception.case.ModelNotFoundException
 import team.b5.moviezip.global.security.MemberPrincipal
+import team.b5.moviezip.keyword.service.KeywordService
 import team.b5.moviezip.member.repository.MemberRepository
 import team.b5.moviezip.movie.dto.MovieSearchResult
 import team.b5.moviezip.movie.dto.response.MovieResponse
@@ -26,7 +29,8 @@ import team.b5.moviezip.review.repository.ReviewRepository
 class MovieService(
     private val movieRepository: MovieRepository,
     private val reviewRepository: ReviewRepository,
-    private val memberRepository: MemberRepository
+    private val memberRepository: MemberRepository,
+    private val keywordService: KeywordService
 ) {
     // 영화 단건 조회
     fun getMovies(movieId: Long) =
@@ -71,6 +75,20 @@ class MovieService(
         pageable: Pageable
     ) = movieRepository.searchMovies(thing, status, nation, pageable)
         .map { MovieResponse.from(it, getAllReviews(it.id!!)) }
+
+    // 영화 검색 (페이징 적용+ 레디스 캐싱)
+    @Cacheable(value = ["movies"], cacheManager = "redisCacheManager")
+    fun searchMoviesByRedis(
+        thing: String,
+        status: MovieStatus?,
+        nation: MovieNation?,
+        pageable: Pageable
+    ):Page<MovieResponse>{
+        keywordService.countKeywords(thing)
+
+        return movieRepository.searchMovies(thing, status, nation, pageable)
+            .map { MovieResponse.from(it, getAllReviews(it.id!!)) }
+    }
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =

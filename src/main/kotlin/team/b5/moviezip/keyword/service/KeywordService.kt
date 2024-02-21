@@ -16,7 +16,7 @@ class KeywordService(
 
         rank.append("인기 검색어\n")
         keywordRanking.forEachIndexed { i, hotKeyword ->
-            rank.append("${i+1}. ${hotKeyword.keyword}\n")
+            rank.append("${i+1}. ${hotKeyword.keyword}   +${hotKeyword.count}\n")
         }
         return rank.toString()
     }
