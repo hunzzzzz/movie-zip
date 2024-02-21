@@ -94,6 +94,8 @@ class DataInitService(
                 || data[6].isEmpty()
                 || data[7].isEmpty()
                 || data[8].isEmpty()
+                || data[9].isEmpty()
+                || data[10].isEmpty()
 
     // 문자열 형식의 날짜 데이터를 ZonedDateTime 으로 변환
     private fun convertStringDateFromZonedDateTime(date: String) =
