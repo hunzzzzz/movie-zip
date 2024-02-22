@@ -4,8 +4,8 @@ import com.opencsv.CSVReader
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team.b5.moviezip.global.util.DummyMovieBuilder
 import team.b5.moviezip.global.variables.MovieVariables
-import team.b5.moviezip.movie.dto.request.AddMovieRequest
 import team.b5.moviezip.movie.model.Movie
 import team.b5.moviezip.movie.model.MovieAgeLimit
 import team.b5.moviezip.movie.model.MovieNation
@@ -29,11 +29,12 @@ class DataInitService(
         Paths.get(System.getProperty("user.dir"), "src/main/resources/static/movie.csv").toString()
 
     // 영화 추가 (더미 데이터)
-    fun addMovies(request: AddMovieRequest) =
-        request.let {
-            if (!isInvalidData(request.toArray(), null))
-                movieRepository.save(dataToEntity(request.toArray()))
+    fun addDummyMovies(value: String) = (1..43758).forEach { _ ->
+        DummyMovieBuilder.getRandomMovies(value).let {
+            if (!isInvalidData(it.toArray(), null))
+                movieRepository.save(dataToEntity(it.toArray()))
         }
+    }
 
     // 영화 추가 (CSV 데이터)
     fun addMovies() = getMoviesFromCsvFile().forEach { movieRepository.save(it) }
@@ -59,13 +60,7 @@ class DataInitService(
     private fun dataToEntity(data: Array<String>) =
         Movie(
             name = data[0],
-            releaseAt = ZonedDateTime.of(
-                LocalDate.parse(
-                    data[1],
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                ).atStartOfDay(),
-                ZoneId.of("Asia/Seoul")
-            ),
+            releaseAt = convertStringDateFromZonedDateTime(data[1]),
             status = getMovieStatus(data[1]),
             sales = data[2].replace(",", "").toLong(),
             audience = data[3].replace(",", "").toLong(),
