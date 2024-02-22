@@ -73,7 +73,7 @@ class RedisConfig {
             .cacheDefaults(
                 RedisCacheConfiguration.defaultCacheConfig()
                     .disableCachingNullValues()
-                    .entryTtl(Duration.ofSeconds(redisDefaultTime))
+                    .entryTtl(Duration.ofMillis(redisDefaultTime))
                     .serializeKeysWith(
                         RedisSerializationContext.SerializationPair
                             .fromSerializer(StringRedisSerializer())
