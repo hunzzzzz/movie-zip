@@ -20,4 +20,6 @@ interface ReviewRepository : JpaRepository<Review, Long> {
 
     fun findReviewsByMovieAndMember(movie: Movie, member: Member): List<Review>
 
+    fun findAllByMovieId(movieId: Long): List<Review>
+
 }

@@ -1,6 +1,7 @@
 package team.b5.moviezip.review.dto
 
 import team.b5.moviezip.review.model.Review
+import java.io.Serializable
 import java.time.ZonedDateTime
 
 data class ReviewResponse(
@@ -8,7 +9,7 @@ data class ReviewResponse(
     val ratings: Int,
     val content: String,
     val createdAt: ZonedDateTime,
-) {
+):Serializable {
     companion object {
         fun from(review: Review) = ReviewResponse(
             name = review.member.name,

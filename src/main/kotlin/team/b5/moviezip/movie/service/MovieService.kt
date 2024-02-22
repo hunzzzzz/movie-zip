@@ -3,6 +3,7 @@ package team.b5.moviezip.movie.service
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,7 +31,8 @@ class MovieService(
     private val movieRepository: MovieRepository,
     private val reviewRepository: ReviewRepository,
     private val memberRepository: MemberRepository,
-    private val keywordService: KeywordService
+    private val keywordService: KeywordService,
+    private val redisTemplate: RedisTemplate<String,MovieResponse>
 ) {
     // 영화 단건 조회
     fun getMovies(movieId: Long) =
@@ -101,6 +103,26 @@ class MovieService(
                     MovieResponse.from(it)
                 }
         }
+
+    fun getMoviesByRedis(movieId: Long): MovieResponse {
+        // 캐시에서 영화 정보 확인
+        val cachedMovieResponse = redisTemplate.opsForValue().get("movie_$movieId")
+        if (cachedMovieResponse != null) {
+            // 캐시에 정보가 이미 있으면 반환
+            return cachedMovieResponse
+        }
+        // 데이터베이스에서 영화 정보 가져오기
+        val movie = movieRepository.findById(movieId)
+            .orElseThrow { NoSuchElementException("Movie not found: $movieId") }
+        // 리뷰 정보 가져오기
+        val reviews = reviewRepository.findAllByMovieId(movieId)
+        val reviewResponses = reviews.map { ReviewResponse.from(it) }
+        // MovieResponse로 변환
+        val movieResponse = MovieResponse.from(movie)
+        // 캐시에 저장
+        redisTemplate.opsForValue().set("movie_$movieId", movieResponse)
+        return movieResponse
+    }
 
     // 좋아요
     fun like(memberPrincipal: MemberPrincipal, movieId: Long) =
