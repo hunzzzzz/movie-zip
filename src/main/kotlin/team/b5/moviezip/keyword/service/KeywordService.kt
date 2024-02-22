@@ -1,6 +1,10 @@
 package team.b5.moviezip.keyword.service
 
+import org.hibernate.NonUniqueResultException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Isolation
+import org.springframework.transaction.annotation.Transactional
 import team.b5.moviezip.keyword.model.HotKeyword
 import team.b5.moviezip.keyword.repository.KeywordRepository
 
@@ -21,6 +25,7 @@ class KeywordService(
         return rank.toString()
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     fun countKeywords(keyword: String){
         when (keywordRepository.existsByKeyword(keyword)){
             true -> {
@@ -29,12 +34,18 @@ class KeywordService(
                 keywordRepository.save(keywords)
             }
             false -> {
-                keywordRepository.save(
-                    HotKeyword(
-                        keyword= keyword,
-                        count = 1
+//                try {
+                    keywordRepository.save(
+                        HotKeyword(
+                            keyword= keyword,
+                            count = 1
+                        )
                     )
-                )
+//                } catch (e: DataIntegrityViolationException){
+//                    val keywords= getKeywordInfo(keyword)
+//                    keywords.count++
+//                    keywordRepository.save(keywords)
+//                }
             }
         }
     }
