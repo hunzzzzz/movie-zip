@@ -85,7 +85,7 @@ class MovieService(
         }
 
     // 영화 검색 (페이징 적용+ 레디스 캐싱)
-    @Cacheable(value = ["movies"], cacheManager = "redisCacheManager")
+    @Cacheable(key = "#thing", value = ["movies"], cacheManager = "redisCacheManager")
     fun searchMoviesByRedis(
         thing: String,
         status: MovieStatus?,

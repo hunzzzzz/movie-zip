@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Table(name = "hot_keywords")
 class HotKeyword(
 
-    @Column(name = "keyword", nullable = false)
+    @Column(name = "keyword",unique = true, nullable = false)
     val keyword: String,
 
     @Column(name = "count", nullable = false)
