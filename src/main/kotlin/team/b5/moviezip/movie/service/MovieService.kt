@@ -32,7 +32,7 @@ class MovieService(
     private val reviewRepository: ReviewRepository,
     private val memberRepository: MemberRepository,
     private val keywordService: KeywordService,
-    private val redisTemplate: RedisTemplate<String,MovieResponse>
+    private val redisTemplate: RedisTemplate<String, MovieResponse>
 ) {
     // 영화 단건 조회
     fun getMovies(movieId: Long) =
@@ -77,14 +77,12 @@ class MovieService(
         ageLimit: MovieAgeLimit?,
         pageable: Pageable
     ) =
-        keywordService.countKeywords(thing).run {
-            movieRepository.searchMovies(thing, status, nation, ageLimit, pageable)
-                .map {
-                    keywordService.countKeywords(it.name)
-                    it.updateSearchCount()
-                    MovieResponse.from(it)
-                }
-        }
+        movieRepository.searchMovies(thing, status, nation, ageLimit, pageable)
+            .map {
+                keywordService.countKeywords(it.name) // 키워드 검색 횟수 +1
+                it.updateSearchCount() // Movie 엔티티 내 searchCount +1
+                MovieResponse.from(it)
+            }
 
     // 영화 검색 (페이징 적용+ 레디스 캐싱)
     @Cacheable(key = "#thing", value = ["movies"], cacheManager = "redisCacheManager")
@@ -95,14 +93,12 @@ class MovieService(
         ageLimit: MovieAgeLimit?,
         pageable: Pageable
     ): Page<MovieResponse> =
-        keywordService.countKeywords(thing).run {
-            movieRepository.searchMovies(thing, status, nation, ageLimit, pageable)
-                .map {
-                    keywordService.countKeywords(it.name)
-                    it.updateSearchCount()
-                    MovieResponse.from(it)
-                }
-        }
+        movieRepository.searchMovies(thing, status, nation, ageLimit, pageable)
+            .map {
+                keywordService.countKeywords(it.name)
+                it.updateSearchCount()
+                MovieResponse.from(it)
+            }
 
     fun getMoviesByRedis(movieId: Long): MovieResponse {
         // 캐시에서 영화 정보 확인
