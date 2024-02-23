@@ -13,7 +13,7 @@ class KeywordController(
 ) {
 
     @Operation(summary = "인기검색어 목록 조회")
-    @GetMapping
+    @GetMapping("/hot-keywords")
     fun getHotKeywords(
     ):ResponseEntity<String>{
         return ResponseEntity

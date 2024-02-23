@@ -31,8 +31,8 @@ class DataInitService(
     // 영화 추가 (더미 데이터)
     fun addDummyMovies(value: String) = (1..43758).forEach { _ ->
         DummyMovieBuilder.getRandomMovies(value).let {
-            if (!isInvalidData(it.toArray(), null))
-                movieRepository.save(dataToEntity(it.toArray()))
+            if (!isInvalidData(it, null))
+                movieRepository.save(dataToEntity(it))
         }
     }
 
